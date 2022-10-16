@@ -12,6 +12,6 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.export-dir }}
+    - -export-dir ${{ inputs.export-dir }}
 
   
