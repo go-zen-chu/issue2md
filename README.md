@@ -1,7 +1,9 @@
 # issue2md
 
-[![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/ci/badge.svg)](https://github.com/go-zen-chu/issue2md/actions)
-[![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/push-image/badge.svg)](https://github.com/go-zen-chu/issue2md/actions)
+[![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/ci/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/ci.yml)
+[![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/push-image/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/push-image.yml)
+
+[dockerhub: amasuda/issue2md](https://hub.docker.com/repository/docker/amasuda/issue2md)
 
 GitHub Action for archiving GitHub issue to Markdown
 

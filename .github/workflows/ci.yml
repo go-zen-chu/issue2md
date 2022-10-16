@@ -1,5 +1,4 @@
-name: Go package
-
+name: ci
 on: [push]
 
 jobs:
@@ -18,4 +17,3 @@ jobs:
         run: go build -v ./...
       - name: Test
         run: go test -v ./...
-
