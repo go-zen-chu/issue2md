@@ -1,0 +1,18 @@
+name: issue2md
+on:
+  issues:
+    types:
+      - closed
+
+jobs:
+  convert_issue2md:
+    runs-on: ubuntu-latest
+    name: convert closed issue to markdown
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: (Private) issue2md step
+        uses: ./ # Uses an action in the root directory
+        id: issue2md
+        with:
+          export-dir: issues
