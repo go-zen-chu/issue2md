@@ -1,0 +1,17 @@
+name: 'Issue2md'
+description: 'Converting GitHub issue to markdown'
+inputs:
+  export-dir:  # id of input
+    description: 'Which directory inside your repository to export markdown. Default is / (repository root)'
+    required: true
+    default: '/'
+outputs:
+  time: # id of output
+    description: 'The time we greeted you'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.export-dir }}
+
+  

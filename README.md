@@ -2,6 +2,7 @@
 
 [![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/ci/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/ci.yml)
 [![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/push-image/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/push-image.yml)
+[![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/issue2md/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/issue2md.yml)
 
 [dockerhub: amasuda/issue2md](https://hub.docker.com/repository/docker/amasuda/issue2md)
 
