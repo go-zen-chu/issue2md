@@ -13,7 +13,7 @@ jobs:
           cache: true
       - name: Install dependent packages
         run: go mod download
-      - name: Build
+      - name: Test Build
         run: go build -v ./...
       - name: Test
         run: go test -v ./...
