@@ -19,7 +19,7 @@ jobs:
       - name: Install dependent packages
         run: go mod download
       - name: Build binary
-        run: GOOS=linux GOARCH=amd64 go build -v -o issue2md cmd/issue2md/main.go
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o issue2md cmd/issue2md/main.go
       - name: publish image with timestamp
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
