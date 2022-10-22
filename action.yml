@@ -1,4 +1,5 @@
 name: 'Issue2md'
+author: 'Akira Masuda (go-zen-chu)'
 description: 'Converting GitHub issue to markdown'
 inputs:
   export-dir:  # id of input

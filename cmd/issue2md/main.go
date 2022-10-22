@@ -41,7 +41,7 @@ func (edv *exportDirValue) Set(path string) error {
 
 func init() {
 	edValue = &exportDirValue{}
-	mainFlagSet.Var(edValue, "export-dir", "Directory for exporting markdown. Default is '/' which is repository root")
+	mainFlagSet.Var(edValue, "export-dir", "Target directory to export issue as markdowns. Default is '/' which is repository root")
 }
 
 func help() {
