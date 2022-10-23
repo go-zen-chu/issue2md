@@ -2,10 +2,24 @@ name: 'Issue2md'
 author: 'Akira Masuda (go-zen-chu)'
 description: 'Converting GitHub issue to markdown'
 inputs:
+  # required
   export-dir:  # id of input
     description: 'Which directory inside your repository to export markdown. Default is / (repository root)'
     required: true
     default: '/'
+  issue-number:
+    description: 'GitHub issue number'
+    required: true
+  issue-title:
+    description: 'GitHub issue title'
+    required: true
+  # unrequired
+  debug:
+    description: 'Run issue2md with debug mode'
+    default: false
+  issue-labels:
+    description: 'GitHub issue labels'
+    default: ""
   
 outputs:
   time: # id of output
@@ -18,8 +32,8 @@ runs:
     - ${{ inputs.debug }} 
     - -export-dir
     - ${{ inputs.export-dir }}
-    - -issue-id
-    - ${{ inputs.issue-id }}
+    - -issue-number
+    - ${{ inputs.issue-number }}
     - -issue-title
     - ${{ inputs.issue-title }}
     - -issue-labels
