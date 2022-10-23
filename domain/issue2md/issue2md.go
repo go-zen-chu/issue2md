@@ -6,10 +6,10 @@ type Issue2md interface {
 
 type issue2md struct {
 	ghClient GitHubClient
-	ghi      *GitHubIssue
+	ghi      *IssueContent
 }
 
-func NewIssue2md(ghClient GitHubClient, ghi *GitHubIssue) Issue2md {
+func NewIssue2md(ghClient GitHubClient, ghi *IssueContent) Issue2md {
 	return &issue2md{
 		ghClient: ghClient,
 		ghi:      ghi,
