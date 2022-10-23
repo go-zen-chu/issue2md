@@ -29,6 +29,14 @@ TBD
 
 TBD
 
+## Development
+
+### package structure
+
+1. domain: implements core logics
+2. infra: implements interface of domain logic
+3. internal: application wide logics
+
 ## Appendix
 
 ### Metadata format
