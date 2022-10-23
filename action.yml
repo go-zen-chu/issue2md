@@ -3,7 +3,7 @@ author: 'Akira Masuda (go-zen-chu)'
 description: 'Converting GitHub issue to markdown'
 inputs:
   # required
-  export-dir:  # id of input
+  export-dir:
     description: 'Which directory inside your repository to export markdown. Default is / (repository root)'
     required: true
     default: '/'

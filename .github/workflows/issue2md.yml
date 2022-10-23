@@ -26,4 +26,4 @@ jobs:
           export-dir: issues
           issue-number: ${{ github.event.issue.number }}
           issue-title: ${{ github.event.issue.title }}
-          issue-labels: ${{ github.event.issue.label }}
+          issue-labels: ${{ github.event.issue.labels }}
