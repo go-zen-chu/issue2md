@@ -26,4 +26,5 @@ jobs:
           export-dir: issues
           issue-number: ${{ github.event.issue.number }}
           issue-title: ${{ github.event.issue.title }}
-          issue-labels: ${{ github.event.issue.labels.*.name }}
+          # join function from https://docs.github.com/en/actions/learn-github-actions/expressions#example-4
+          issue-labels: ${{ join(github.event.issue.labels.*.name,',') }}
