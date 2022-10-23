@@ -6,6 +6,7 @@ inputs:
     description: 'Which directory inside your repository to export markdown. Default is / (repository root)'
     required: true
     default: '/'
+  
 outputs:
   time: # id of output
     description: 'The time we greeted you'
@@ -13,5 +14,14 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
+    - -debug
+    - ${{ inputs.debug }} 
     - -export-dir
     - ${{ inputs.export-dir }}
+    - -issue-id
+    - ${{ inputs.issue-id }}
+    - -issue-title
+    - ${{ inputs.issue-title }}
+    - -issue-labels
+    - ${{ inputs.issue-labels }}
+

@@ -22,4 +22,8 @@ jobs:
         uses: ./ # Uses an action in the root directory
         id: issue2md
         with:
+          debug: true
           export-dir: issues
+          issue-number: ${{ github.event.issue.number }}
+          issue-title: ${{ github.event.issue.title }}
+          issue-labels: ${{ github.event.issue.label }}
