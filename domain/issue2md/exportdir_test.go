@@ -59,7 +59,14 @@ func TestExportDir_GetAbsPath(t *testing.T) {
 		fields fields
 		want   string
 	}{
-		// TODO: Add test cases.
+		{
+			"if valid fields given, it should work",
+			fields{
+				argPath: "issues/",
+				absPath: "/home/you/issue2md/issues/",
+			},
+			"/home/you/issue2md/issues/",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
