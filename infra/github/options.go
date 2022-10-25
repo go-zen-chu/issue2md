@@ -1,9 +1,8 @@
 package github
 
 type Option struct {
-	baseURL          string
-	token            string
-	commentSeparator string
+	baseURL string
+	token   string
 }
 
 type OptionSetter func(*Option)
@@ -17,11 +16,5 @@ func BaseURL(baseURL string) OptionSetter {
 func Token(token string) OptionSetter {
 	return func(o *Option) {
 		o.token = token
-	}
-}
-
-func CommentSeparator(sep string) OptionSetter {
-	return func(o *Option) {
-		o.commentSeparator = sep
 	}
 }

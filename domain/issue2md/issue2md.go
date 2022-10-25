@@ -1,22 +1,35 @@
 package issue2md
 
+import (
+	"fmt"
+	"os"
+)
+
 type Issue2md interface {
-	Convert2md() error
+	Convert2md(issueURL string) error
 }
 
 type issue2md struct {
 	ghClient GitHubClient
+	expDir   *ExportDir
 	ghi      *IssueContent
 }
 
-func NewIssue2md(ghClient GitHubClient, ghi *IssueContent) Issue2md {
+func NewIssue2md(ghClient GitHubClient, expDir *ExportDir) Issue2md {
 	return &issue2md{
 		ghClient: ghClient,
-		ghi:      ghi,
+		expDir:   expDir,
 	}
 }
 
-func (i2m *issue2md) Convert2md() error {
-	// Do some process using ghi
+func (i2m *issue2md) Convert2md(issueURL string) error {
+	ic, err := i2m.ghClient.GetIssueContent(issueURL)
+	if err != nil {
+		return fmt.Errorf("get issue content: %w", err)
+	}
+	mdStr := ic.GenerateContent("\n")
+	if err := os.WriteFile(ic.GetMDFilename(), []byte(mdStr), 0755); err != nil {
+		return fmt.Errorf("write file: %w", err)
+	}
 	return nil
 }

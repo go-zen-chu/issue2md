@@ -2,7 +2,14 @@ package issue2md
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
+)
+
+var (
+	controlCharsRegex     = regexp.MustCompile("[\u0000-\u001f\u0080-\u009f]")
+	relativePathRegex     = regexp.MustCompile(`^\.+`)
+	filenameReservedRegex = regexp.MustCompile(`[<>:"/\\|?*\x00-\x1F]`)
 )
 
 type IssueContent struct {
@@ -21,7 +28,11 @@ func NewIssueContent(url, title string, labels []string, comments []string) *Iss
 	}
 }
 
-func (ic *IssueContent) Print(commentSeparator string) string {
+func (ic *IssueContent) GetMDFilename() string {
+	return ic.title + ".md"
+}
+
+func (ic *IssueContent) GenerateContent(commentSeparator string) string {
 	var sb strings.Builder
 	// YAML front matter
 	sb.WriteString("---\n")
