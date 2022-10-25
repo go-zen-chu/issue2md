@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	repoRootRegexp = regexp.MustCompile(`.+issue2md`)
+	repoRootRegexp = regexp.MustCompile(`.+?issue2md`)
 )
 
 type ExportDir struct {
