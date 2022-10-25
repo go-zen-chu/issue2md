@@ -70,7 +70,7 @@ func main() {
 	defer log.Close()
 	log.Debugf("helpFlag:%t,debugFlag:%t,exportDir:%+v", *helpVal, *debugVal, *edVal.ed)
 
-	ghClient := igh.NewGitHubClient()
+	ghClient := igh.NewGitHubClient(igh.Token("TBD"))
 	i2m := dis.NewIssue2md(ghClient, edVal.ed)
 	if err := i2m.Convert2md(*ghIssueUrlVal); err != nil {
 		log.Fatal(fmt.Sprintf("converting to markdown: %s", err))
