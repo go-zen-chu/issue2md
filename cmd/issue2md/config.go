@@ -20,7 +20,7 @@ var (
 	helpVal       = flgSet.Bool("help", false, "Show help")
 	edVal         *exportDirValue
 	ghIssueUrlVal = flgSet.String("issue-url", "", fmt.Sprintf("Set GitHub issue url (%sGITHUB_ISSUE_URL)", envPrefix))
-	ghTokenVal    = flgSet.String("github-token", "", fmt.Sprintf("[WARN: recommended set from envvar %sGITHUB_TOKEN] Set GitHub Token (%sGITHUB_TOKEN)", envPrefix))
+	ghTokenVal    = flgSet.String("github-token", "", fmt.Sprintf("[WARN: recommended set from envvar %sGITHUB_TOKEN] Set GitHub Token (%sGITHUB_TOKEN)", envPrefix, envPrefix))
 )
 
 func HelpString() string {
