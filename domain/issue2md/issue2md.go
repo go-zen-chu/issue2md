@@ -3,6 +3,9 @@ package issue2md
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+
+	"github.com/go-zen-chu/issue2md/internal/log"
 )
 
 type Issue2md interface {
@@ -28,7 +31,8 @@ func (i2m *issue2md) Convert2md(issueURL string) error {
 		return fmt.Errorf("get issue content: %w", err)
 	}
 	mdStr := ic.GenerateContent("\n")
-	if err := os.WriteFile(ic.GetMDFilename(), []byte(mdStr), 0755); err != nil {
+	log.Debugf("md: %s", mdStr)
+	if err := os.WriteFile(filepath.Join(i2m.expDir.absPath, ic.GetMDFilename()), []byte(mdStr), 0755); err != nil {
 		return fmt.Errorf("write file: %w", err)
 	}
 	return nil

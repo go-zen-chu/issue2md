@@ -2,14 +2,7 @@ package issue2md
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
-)
-
-var (
-	controlCharsRegex     = regexp.MustCompile("[\u0000-\u001f\u0080-\u009f]")
-	relativePathRegex     = regexp.MustCompile(`^\.+`)
-	filenameReservedRegex = regexp.MustCompile(`[<>:"/\\|?*\x00-\x1F]`)
 )
 
 type IssueContent struct {
