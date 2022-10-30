@@ -1,5 +1,5 @@
 package issue2md
 
 type GitHubClient interface {
-	GetIssueInfo() error
+	GetIssueContent(issueURL string) (*IssueContent, error)
 }

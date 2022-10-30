@@ -31,6 +31,14 @@ TBD
 
 ## Development
 
+### test localy
+
+You can test this action locally by,
+
+```bash
+go run cmd/issue2md/main.go -export-dir=issues -debug -issue-url=https://github.com/go-zen-chu/issue2md/issues/2
+```
+
 ### package structure
 
 1. domain: implements core logics

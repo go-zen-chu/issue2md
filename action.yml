@@ -7,20 +7,13 @@ inputs:
     description: 'Which directory inside your repository to export markdown. Default is / (repository root)'
     required: true
     default: '/'
-  issue-number:
-    description: 'GitHub issue number'
+  issue-url:
+    description: 'GitHub issue URL'
     required: true
-  issue-title:
-    description: 'GitHub issue title'
-    required: true
-  # unrequired
+  # optional
   debug:
     description: 'Run issue2md with debug mode'
-    default: false
-  issue-labels:
-    description: 'GitHub issue labels'
-    default: ""
-  
+    default: false 
 outputs:
   time: # id of output
     description: 'The time we greeted you'
@@ -28,14 +21,10 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - -debug
-    - ${{ inputs.debug }} 
     - -export-dir
     - ${{ inputs.export-dir }}
-    - -issue-number
-    - ${{ inputs.issue-number }}
-    - -issue-title
-    - ${{ inputs.issue-title }}
-    - -issue-labels
-    - ${{ inputs.issue-labels }}
+    - -issue-url
+    - ${{ inputs.issue-url }}
+    - -debug
+    - ${{ inputs.debug }} 
 

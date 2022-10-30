@@ -21,10 +21,9 @@ jobs:
       - name: (Private) issue2md step
         uses: ./ # Uses an action in the root directory
         id: issue2md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           debug: true
           export-dir: issues
-          issue-number: ${{ github.event.issue.number }}
-          issue-title: ${{ github.event.issue.title }}
-          # join function from https://docs.github.com/en/actions/learn-github-actions/expressions#example-4
-          issue-labels: ${{ join(github.event.issue.labels.*.name,',') }}
+          issue-url: ${{ github.event.issue.html_url }}
