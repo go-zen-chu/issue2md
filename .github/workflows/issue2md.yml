@@ -17,7 +17,7 @@ jobs:
           go-version: 1.19
           cache: true
       - name: Build binary
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o issue2md cmd/issue2md/main.go
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o issue2md cmd/issue2md/*.go
       - name: (Private) issue2md step
         uses: ./ # Uses an action in the root directory
         id: issue2md
