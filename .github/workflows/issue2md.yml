@@ -22,7 +22,7 @@ jobs:
         uses: ./ # Uses an action in the root directory
         id: issue2md
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE2MD_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           debug: true
           export-dir: issues
