@@ -28,16 +28,16 @@ jobs:
           export-dir: issues
           issue-url: ${{ github.event.issue.html_url }}
       - name: commit if any updates exists
-        run:
+        run: |
             if git diff-index --quiet HEAD --; then
-              echo "git diff exit code $?. No changes"
+                echo "git diff exit code $?. No changes"
             else
-              set -ex
-              git config --local user.email "action@github.com"
-              git config --local user.name "GitHub Action"
-              git diff
-              git diff-index HEAD
-              git add --all
-              git commit -m "[GitHub Action] Update automatically"
-              git push
+                set -ex
+                git config --local user.email "action@github.com"
+                git config --local user.name "GitHub Action"
+                git diff
+                git diff-index HEAD
+                git add --all
+                git commit -m "[GitHub Action] Update automatically"
+                git push
             fi
