@@ -44,17 +44,31 @@ type config struct {
 	ghToken    string
 }
 
-func NewConfig() *config {
+func (c *config) String() string {
+	ghToken := "<empty>"
+	if len(c.ghToken) > 0 {
+		ghToken = "<masked>"
+	}
+	// make sure NOT TO print credentials
+	return fmt.Sprintf("config{debug:%t,help:%t,exportDir:%s,issueURL:%s,token:%s}", c.debug, c.help, c.exportDir.GetAbsPath(), c.ghIssueUrl, ghToken)
+}
+
+func NewConfig() (*config, error) {
 	edVal = new(exportDirValue)
-	flgSet.Var(edVal, "export-dir", "Target directory to export issue as markdowns. Default is '/' which is repository root")
+	flgSet.Var(edVal, "export-dir", "Target directory to export issue as markdowns. Default is './' which is repository root")
+	var ded *dis.ExportDir
+	var err error
+	if ded, err = dis.NewExportDir("./"); err != nil {
+		return nil, err
+	}
 	// return default config
 	return &config{
 		debug:      false,
 		help:       false,
-		exportDir:  nil,
+		exportDir:  ded,
 		ghIssueUrl: "",
 		ghToken:    "",
-	}
+	}, nil
 }
 
 func (c *config) LoadEnvVars(envVars []string) error {

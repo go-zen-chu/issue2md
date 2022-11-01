@@ -10,22 +10,26 @@ import (
 )
 
 func main() {
-	conf := NewConfig()
-	if err := conf.LoadEnvVars(os.Environ()); err != nil {
+	var conf *config
+	var err error
+	if conf, err = NewConfig(); err != nil {
+		panic(fmt.Errorf("create default config: %w", err))
+	}
+	if err = conf.LoadEnvVars(os.Environ()); err != nil {
 		panic(fmt.Errorf("load env var: %w", err))
 	}
-	if err := conf.LoadCommandArgs(os.Args); err != nil {
+	if err = conf.LoadCommandArgs(os.Args); err != nil {
 		panic(fmt.Errorf("load args: %w", err))
 	}
 	if conf.help {
 		fmt.Println(HelpString())
 		os.Exit(0)
 	}
-	if err := log.Init(conf.debug); err != nil {
+	if err = log.Init(conf.debug); err != nil {
 		panic(fmt.Errorf("initializing logger: %w", err))
 	}
 	defer log.Close()
-	log.Debugf("config: %+v", conf)
+	log.Debugf("%s\n", conf)
 
 	//TODO: use di factory for future work
 	ghClient := igh.NewGitHubClient(igh.Token(conf.ghToken))

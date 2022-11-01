@@ -25,7 +25,7 @@ jobs:
         with:
           image: amasuda/issue2md
           addTimestamp: true
-          registry: docker.io # TIPS: hub.docker.com is website and not appropriate
+          registry: docker.io # TIPS: hub.docker.com is a website and not a container registry
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish image with latest tag

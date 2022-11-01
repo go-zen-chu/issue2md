@@ -33,10 +33,17 @@ TBD
 
 ### test localy
 
-You can test this action locally by,
+You can test this action locally by, setting ISSUE2MD_GITHUB_TOKEN envvar and run
 
 ```bash
- go run cmd/issue2md/*.go -export-dir=./issues -issue-url=https://github.com/go-zen-chu/issue2md/issues/2
+# With go
+go run cmd/issue2md/*.go -debug -export-dir=./issues -issue-url=https://github.com/go-zen-chu/issue2md/issues/2
+
+# or using nerdctl. Replace `lima nerdctl` to `docker` if you use docker
+# build image
+GOARCH=amd64 GOOS=linux go build -v -o issue2md ./cmd/issue2md/*.go; lima nerdctl build -t issue2md:latest .
+# run on container
+lima nerdctl run -it -e ISSUE2MD_GITHUB_TOKEN=${ISSUE2MD_GITHUB_TOKEN} --rm issue2md:latest -- -debug -issue-url=https://github.com/go-zen-chu/issue2md/issues/2 
 ```
 
 ### package structure
