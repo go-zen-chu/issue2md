@@ -10,7 +10,7 @@ var (
 		url:      "https://github.com/Codertocat/Hello-World/issues/1",
 		title:    "test issue",
 		labels:   []string{"a", "b"},
-		comments: []string{"test1", "test2"},
+		contents: []string{"test1", "test2"},
 	}
 )
 
@@ -19,7 +19,7 @@ func TestNewIssueContent(t *testing.T) {
 		url      string
 		title    string
 		labels   []string
-		comments []string
+		contents []string
 	}
 	tests := []struct {
 		name string
@@ -32,14 +32,14 @@ func TestNewIssueContent(t *testing.T) {
 				url:      "https://github.com/Codertocat/Hello-World/issues/1",
 				title:    "test issue",
 				labels:   []string{"a", "b"},
-				comments: []string{"test1", "test2"},
+				contents: []string{"test1", "test2"},
 			},
 			&testIC1,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewIssueContent(tt.args.url, tt.args.title, tt.args.labels, tt.args.comments); !reflect.DeepEqual(got, tt.want) {
+			if got := NewIssueContent(tt.args.url, tt.args.title, tt.args.labels, tt.args.contents); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewIssueContent() = %v, want %v", got, tt.want)
 			}
 		})
@@ -51,7 +51,7 @@ func TestIssueContent_GetMDFilename(t *testing.T) {
 		url      string
 		title    string
 		labels   []string
-		comments []string
+		contents []string
 	}
 	tests := []struct {
 		name   string
@@ -72,7 +72,7 @@ func TestIssueContent_GetMDFilename(t *testing.T) {
 				url:      tt.fields.url,
 				title:    tt.fields.title,
 				labels:   tt.fields.labels,
-				comments: tt.fields.comments,
+				contents: tt.fields.contents,
 			}
 			if got := ic.GetMDFilename(); got != tt.want {
 				t.Errorf("IssueContent.GetMDFilename() = %v, want %v", got, tt.want)
@@ -86,10 +86,10 @@ func TestIssueContent_Print(t *testing.T) {
 		url      string
 		title    string
 		labels   []string
-		comments []string
+		contents []string
 	}
 	type args struct {
-		commentSeparator string
+		contentseparator string
 	}
 	tests := []struct {
 		name   string
@@ -103,7 +103,7 @@ func TestIssueContent_Print(t *testing.T) {
 				url:      "https://github.com/Codertocat/Hello-World/issues/1",
 				title:    "test issue",
 				labels:   []string{"a", "b"},
-				comments: []string{"test1", "test2"},
+				contents: []string{"test1", "test2"},
 			},
 			args{
 				"\n",
@@ -124,9 +124,9 @@ test2
 				url:      tt.fields.url,
 				title:    tt.fields.title,
 				labels:   tt.fields.labels,
-				comments: tt.fields.comments,
+				contents: tt.fields.contents,
 			}
-			if got := ic.GenerateContent(tt.args.commentSeparator); got != tt.want {
+			if got := ic.GenerateContent(tt.args.contentseparator); got != tt.want {
 				t.Errorf("IssueContent.Print() = %v, want %v", got, tt.want)
 			}
 		})

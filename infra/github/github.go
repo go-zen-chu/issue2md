@@ -72,9 +72,10 @@ func (ghc *ghClient) GetIssueContent(issueURL string) (*dis.IssueContent, error)
 	if err != nil {
 		return nil, fmt.Errorf("get comments: %w", err)
 	}
-	comments := make([]string, len(cs))
+	comments := make([]string, len(cs)+1)
+	comments[0] = *i.Body
 	for idx, c := range cs {
-		comments[idx] = *c.Body
+		comments[idx+1] = *c.Body
 	}
 	ic := dis.NewIssueContent(issueURL, i.GetTitle(), labels, comments)
 	return ic, nil

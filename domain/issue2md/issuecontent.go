@@ -9,15 +9,15 @@ type IssueContent struct {
 	url      string
 	title    string
 	labels   []string
-	comments []string
+	contents []string
 }
 
-func NewIssueContent(url, title string, labels []string, comments []string) *IssueContent {
+func NewIssueContent(url, title string, labels []string, contents []string) *IssueContent {
 	return &IssueContent{
 		url:      url,
 		title:    title,
 		labels:   labels,
-		comments: comments,
+		contents: contents,
 	}
 }
 
@@ -25,7 +25,7 @@ func (ic *IssueContent) GetMDFilename() string {
 	return ic.title + ".md"
 }
 
-func (ic *IssueContent) GenerateContent(commentSeparator string) string {
+func (ic *IssueContent) GenerateContent(contentseparator string) string {
 	var sb strings.Builder
 	// YAML front matter
 	sb.WriteString("---\n")
@@ -34,7 +34,7 @@ func (ic *IssueContent) GenerateContent(commentSeparator string) string {
 	sb.WriteString(fmt.Sprintf("labels: [%s]\n", strings.Join(ic.labels, ",")))
 	sb.WriteString("---\n")
 	// content
-	sb.WriteString(strings.Join(ic.comments, commentSeparator))
+	sb.WriteString(strings.Join(ic.contents, contentseparator))
 	sb.WriteString("\n")
 	return sb.String()
 }
