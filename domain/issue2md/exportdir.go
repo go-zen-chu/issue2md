@@ -21,26 +21,19 @@ func NewExportDir(path string) (*ExportDir, error) {
 	if strings.HasPrefix(path, "..") {
 		return nil, fmt.Errorf("traversing dir is not allowed: %s", path)
 	}
-	r, err := getRepoRoot()
-	if err != nil {
+	var wd string
+	var err error
+	if wd, err = os.Getwd(); err != nil {
+		return nil, err
+	}
+	absPath := filepath.Join(wd, path)
+	if _, err = os.Stat(absPath); err != nil {
 		return nil, err
 	}
 	return &ExportDir{
 		argPath: path,
-		absPath: filepath.Join(r, path),
+		absPath: absPath,
 	}, nil
-}
-
-func getRepoRoot() (string, error) {
-	f, err := os.Getwd()
-	if err != nil {
-		return "", fmt.Errorf("get working dir: %w", err)
-	}
-	repoRoot := repoRootRegexp.FindString(f)
-	if len(repoRoot) == 0 {
-		return "", fmt.Errorf("could not find repo root in path: %s", f)
-	}
-	return repoRoot, nil
 }
 
 func (ed *ExportDir) GetAbsPath() string {
