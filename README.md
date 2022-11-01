@@ -36,7 +36,7 @@ TBD
 You can test this action locally by,
 
 ```bash
-go run cmd/issue2md/main.go -export-dir=issues -debug -issue-url=https://github.com/go-zen-chu/issue2md/issues/2
+ go run cmd/issue2md/*.go -export-dir=./issues -issue-url=https://github.com/go-zen-chu/issue2md/issues/2
 ```
 
 ### package structure
