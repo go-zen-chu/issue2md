@@ -3,6 +3,7 @@ title: test issue
 url: https://github.com/go-zen-chu/issue2md/issues/2
 labels: [invalid,test]
 ---
+This is a test issue for checking issue2md works as expected
 github action should run
 yes it runs
 
