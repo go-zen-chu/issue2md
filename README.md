@@ -2,32 +2,42 @@
 
 [![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/ci/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/ci.yml)
 [![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/push-image/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/push-image.yml)
+[![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/test-issue2md/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/test-issue2md.yml)
 [![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/issue2md/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/issue2md.yml)
 
 [dockerhub: amasuda/issue2md](https://hub.docker.com/repository/docker/amasuda/issue2md)
 
-GitHub Action for archiving GitHub issue to Markdown
+GitHub Action for archiving GitHub issue to Markdown.
+
+Please see an example [issue](https://github.com/go-zen-chu/issue2md/issues/2) & [archived issue](https://github.com/go-zen-chu/issue2md/blob/main/issues/test%20issue.md).
 
 ## Goal
 
 The goal of this project is,
 
-- Convert GitHub issues to markdowns so that you can manage & archive by git
+- Convert GitHub issues to markdown files so you can manage & archive issues as markdown with git
 
 ### Use case
 
-- Archiving all issues to markdowns so that you can permenently store them in git
-- Write down your private note to issues and save them as markdown
+- Archiving issues to markdowns for permenently store them in git
+- Write down your private notes to GitHub issues and save them as markdown files
 
-## How to use
+## Installation
 
-### GitHub Action yaml
+Just run a command below in your repository root.
 
-TBD
+```bash
+mkdir -p .github/workflows; 
+curl -s https://raw.githubusercontent.com/go-zen-chu/issue2md/main/docs/issue2md.yml -o .github/workflows/issue2md.yml
+```
 
-### Parameters
+## Parameters
 
-TBD
+| name         | value  | required | default | description                                                                                                                                                                                                             |
+|--------------|--------|----------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| github_token | string | *        | -       | [GitHub token](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow) for r/w issue and repo. Using `${{ secrets.GITHUB_TOKEN }}` as inputs satisfies. |
+| issue-url    | string | *        | -       | Issue url for exporting to markdown. Using `${{ github.event.issue.html_url }}` as inputs satisfies.                                                                                                                    |
+| export-dir   | string |          | `.`     | A directory in your repository to export markdown. Default is `.` (repository root)                                                                                                                             |
 
 ## Development
 
@@ -56,4 +66,4 @@ lima nerdctl run -it -e ISSUE2MD_GITHUB_TOKEN=${ISSUE2MD_GITHUB_TOKEN} --rm issu
 
 ### Metadata format
 
-Converted metadata of a issue are stored as [YAML Front-matter](https://jekyllrb.com/docs/front-matter/).
+Metadata of an issue are stored with [YAML Front-matter](https://jekyllrb.com/docs/front-matter/) format.

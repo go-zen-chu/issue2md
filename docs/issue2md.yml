@@ -13,10 +13,10 @@ jobs:
       - name: Convert issue to markdown
         uses: go-zen-chu/issue2md@main
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           issue-url: ${{ github.event.issue.html_url }}
           # By default, this action stores markdown to repository root. If you want to change export dir, make directory and change setting below.
-          export-dir: ./issues
+          #export-dir: ./issues
       - name: Push to main branch if any updates exists
         run: |
             gdiff=$(git diff)

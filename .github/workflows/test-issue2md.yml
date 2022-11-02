@@ -1,24 +1,36 @@
-name: issue2md
+name: test-issue2md
 on:
   issues:
     types:
       - closed
 jobs:
-  issue2md:
+  convert_issue2md:
     runs-on: ubuntu-latest
     name: convert closed issue to markdown
+    # make sure kicking this workflow when issue has `test` label 
+    if: ${{ github.event.label.name == 'test' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Convert issue to markdown
-        uses: go-zen-chu/issue2md@main
+      - name: Set up Go
+        uses: actions/setup-go@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-url: ${{ github.event.issue.html_url }}
-          # By default, this action stores markdown to repository root. If you want to change export dir, make directory and change setting below.
+          go-version: 1.19
+          cache: true
+      - name: Build latest binary
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o issue2md cmd/issue2md/*.go
+      - name: (Private Action) issue2md step
+        uses: ./ # Uses an action in the root directory
+        id: issue2md
+        env:
+          ISSUE2MD_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          debug: true
           export-dir: ./issues
+          issue-url: ${{ github.event.issue.html_url }}
       - name: Push to main branch if any updates exists
         run: |
+            set -x
             gdiff=$(git diff)
             if [[ -z $gdiff ]]; then
                 echo "No changes"
