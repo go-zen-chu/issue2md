@@ -37,3 +37,8 @@ https://docs.github.com/en/actions/learn-github-actions/expressions#example-4
 finally we got labels with csv string!
 ![image](https://user-images.githubusercontent.com/1454332/197384129-f9dafcc5-524e-4a8e-899c-203604fc3e63.png)
 
+- test when no change detected → worked as expected
+
+![image](https://user-images.githubusercontent.com/1454332/199508391-5e92fdde-92c9-4b89-9a78-f69406a05722.png)
+
+- test when there is change in issue
