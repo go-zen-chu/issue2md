@@ -30,10 +30,11 @@ jobs:
       - name: commit if any updates exists
         run: |
             set -x
-            if git diff-index --quiet HEAD --; then
-                echo "git diff exit code $?. No changes"
+            gdiff=$(git diff)
+            if [[ -z $gdiff ]]; then
+                echo "No changes"
             else
-                echo "git diff exit code $?. Update detected"
+                echo "Update detected"
                 set -e
                 git config --local user.email "action@github.com"
                 git config --local user.name "GitHub Action"
