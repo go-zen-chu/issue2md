@@ -7,6 +7,7 @@ jobs:
   issue2md:
     runs-on: ubuntu-latest
     name: Convert closed issue to markdown with published action
+    if: ${{ !contains(github.event.issue.labels.*.name, 'test') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
