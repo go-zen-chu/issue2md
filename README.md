@@ -9,8 +9,6 @@
 
 GitHub Action for archiving GitHub issue to Markdown.
 
-Please see an example [issue](https://github.com/go-zen-chu/issue2md/issues/2) & [archived issue](https://github.com/go-zen-chu/issue2md/blob/main/issues/test%20issue.md).
-
 ## Goal
 
 The goal of this project is,
@@ -24,12 +22,15 @@ The goal of this project is,
 
 ## Installation
 
-Just run a command below in your repository root.
+1. Run a command below in your repository root.
 
-```bash
-mkdir -p .github/workflows; 
-curl -s https://raw.githubusercontent.com/go-zen-chu/issue2md/main/docs/issue2md.yml -o .github/workflows/issue2md.yml
-```
+    ```bash
+    mkdir -p .github/workflows; 
+    curl -s https://raw.githubusercontent.com/go-zen-chu/issue2md/main/docs/issue2md.yml -o .github/workflows/issue2md.yml
+    ```
+
+1. Commit and push to your repository
+1. When issue closed, GitHub action called `issue2md` export the issue as a markdown to specified dir. Please see an example [issue](https://github.com/go-zen-chu/issue2md/issues/2) & [archived issue](https://github.com/go-zen-chu/issue2md/blob/main/issues/test%20issue.md).
 
 ## Parameters
 
