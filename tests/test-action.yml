@@ -1,4 +1,4 @@
-name: 'issue2md'
+name: 'test-issue2md'
 author: 'Akira Masuda (go-zen-chu)'
 description: 'Converting GitHub issue to markdown'
 inputs:
@@ -19,7 +19,8 @@ inputs:
     default: false 
 runs:
   using: 'docker'
-  image: 'docker://amasuda/issue2md:latest'
+  # test action uses current Dockerfile (not published image)
+  image: '../Dockerfile'
   args:
     - -github-token=${{ inputs.github-token }} 
     - -issue-url=${{ inputs.issue-url }}

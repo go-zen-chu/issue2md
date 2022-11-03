@@ -20,8 +20,9 @@ jobs:
       - name: Build latest binary
         run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o issue2md cmd/issue2md/*.go
       - name: (Private Action) issue2md step
-        uses: ./ # Uses an action in the root directory
-        id: issue2md
+        # Make sure using a test action
+        uses: ./tests/test-action.yml
+        id: test-issue2md
         env:
           ISSUE2MD_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
