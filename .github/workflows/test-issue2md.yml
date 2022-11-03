@@ -21,7 +21,7 @@ jobs:
         run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o issue2md cmd/issue2md/*.go
       - name: (Private Action) issue2md step
         # Make sure using a test action
-        uses: ./tests/test-action.yml
+        uses: ./tests/
         id: test-issue2md
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
