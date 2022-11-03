@@ -19,6 +19,7 @@ jobs:
           export-dir: ./issues
       - name: Push to main branch if any updates exists
         run: |
+            set -x
             gdiff=$(git diff)
             if [[ -z $gdiff ]]; then
                 echo "No changes"
