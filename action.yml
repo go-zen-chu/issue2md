@@ -19,7 +19,7 @@ inputs:
     default: false 
 runs:
   using: 'docker'
-  image: 'go-zen-chu/issue2md@latest'
+  image: 'docker://amasuda/issue2md@latest'
   args:
     - -github-token
     - ${{ inputs.github-token }} 
