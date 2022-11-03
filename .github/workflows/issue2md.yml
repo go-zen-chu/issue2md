@@ -6,7 +6,7 @@ on:
 jobs:
   issue2md:
     runs-on: ubuntu-latest
-    name: convert closed issue to markdown
+    name: Convert closed issue to markdown with published action
     steps:
       - name: Checkout
         uses: actions/checkout@v3
