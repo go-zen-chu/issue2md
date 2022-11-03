@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Convert closed issue to markdown with test action
     # make sure kicking this workflow when issue has `test` label 
-    if: ${{ github.event.label.name == 'test' }}
+    if: ${{ contains(github.event.issue.labels.*.name, 'test') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
