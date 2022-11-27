@@ -12,13 +12,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.19
-          cache: true
-      - name: Build latest binary
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o issue2md cmd/issue2md/*.go
       - name: (Private Action) issue2md step
         # Make sure using a test action
         uses: ./tests/
