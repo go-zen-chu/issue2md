@@ -32,6 +32,16 @@ The goal of this project is,
 1. Commit and push to your repository
 1. When issue closed, GitHub action called `issue2md` export the issue as a markdown to specified dir. Please see an example [issue](https://github.com/go-zen-chu/issue2md/issues/2) & [archived issue](https://github.com/go-zen-chu/issue2md/blob/main/issues/test%20issue.md).
 
+### Update issue2md action
+
+Basically, run a command below to get latest action file.
+
+```bash
+curl -s https://raw.githubusercontent.com/go-zen-chu/issue2md/main/docs/issue2md.yml -o .github/workflows/issue2md.yml
+```
+
+If you edited upper file locally, then hit `git diff` and merge to the latest file.
+
 ## Parameters
 
 | name         | value  | required | default | description                                                                                                                                                                                                             |

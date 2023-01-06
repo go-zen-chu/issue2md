@@ -37,4 +37,3 @@ jobs:
             git add --all
             git commit -m "[skip ci] [GitHub Action] Update automatically"
             git push
-
