@@ -4,38 +4,38 @@ import (
 	"fmt"
 	"os"
 
-	dis "github.com/go-zen-chu/issue2md/domain/issue2md"
 	igh "github.com/go-zen-chu/issue2md/infra/github"
+	"github.com/go-zen-chu/issue2md/internal/config"
 	"github.com/go-zen-chu/issue2md/internal/log"
+	"github.com/go-zen-chu/issue2md/internal/runner"
+	ui2m "github.com/go-zen-chu/issue2md/usecase/issue2md"
 )
 
-func main() {
-	var conf *config
-	var err error
-	if conf, err = NewConfig(); err != nil {
-		panic(fmt.Errorf("create default config: %w", err))
+func run(envVars []string, cmdArgs []string) error {
+	r := runner.NewRunner("issue2md")
+	if err := r.LoadConfigFromEnvVars(envVars); err != nil {
+		return fmt.Errorf("load env var: %w", err)
 	}
-	if err = conf.LoadEnvVars(os.Environ()); err != nil {
-		panic(fmt.Errorf("load env var: %w", err))
+	if err := r.LoadConfigFromCommandArgs(cmdArgs); err != nil {
+		return fmt.Errorf("load args: %w", err)
 	}
-	if err = conf.LoadCommandArgs(os.Args); err != nil {
-		panic(fmt.Errorf("load args: %w", err))
+	if err := r.Run(func(c config.Config) error {
+		// TBD: implement di
+		ghClient := igh.NewGitHubClient(igh.Token(c.GetGitHubToken()))
+		i2muc := ui2m.NewIssue2mdUseCase(ghClient, "")
+		if err := i2muc.Convert2md(c.GetGitHubIssueURL()); err != nil {
+			return fmt.Errorf("convert to markdown: %w", err)
+		}
+		log.Infof("Export issue %s to %s, succeeded\n", c.GetGitHubIssueURL(), c.GetExportDir())
+		return nil
+	}); err != nil {
+		return fmt.Errorf("while running: %w", err)
 	}
-	if conf.help {
-		fmt.Println(HelpString())
-		os.Exit(0)
-	}
-	if err = log.Init(conf.debug); err != nil {
-		panic(fmt.Errorf("initializing logger: %w", err))
-	}
-	defer log.Close()
-	log.Debugf("%s\n", conf)
+	return nil
+}
 
-	//TODO: use di factory for future work
-	ghClient := igh.NewGitHubClient(igh.Token(conf.ghToken))
-	i2m := dis.NewIssue2md(ghClient, conf.exportDir)
-	if err := i2m.Convert2md(conf.ghIssueUrl); err != nil {
-		log.Fatal(fmt.Sprintf("converting to markdown: %s", err))
+func main() {
+	if err := run(os.Environ(), os.Args); err != nil {
+		panic(fmt.Sprintf("run(): %s", err))
 	}
-	log.Infof("Export issue %s to %s, succeeded\n", conf.ghIssueUrl, conf.exportDir.GetAbsPath())
 }

@@ -10,45 +10,48 @@ import (
 	"github.com/go-zen-chu/issue2md/internal/log"
 )
 
-// Runner defines interface for running general applications
+/*
+Runner defines interface for running general applications.
+Runner depends on internal packages such as config, log, ... and work as wrapper to initialize and setup them.
+*/
 type Runner interface {
-	// Hand command line args to config for setup
-	LoadConfigFromCommandArgs(args []string) error
 	// Hand environment vars to config for setup
 	LoadConfigFromEnvVars(envVars []string) error
-	SetCommandHandler(ch CommandHandler)
-	Run() error
+	// Hand command line args to config for setup
+	LoadConfigFromCommandArgs(args []string) error
+	// Run execute runner with other setup processes
+	Run(ch ConfigHandler) error
 }
 
-type CommandHandler func(c *config.Config) error
+type ConfigHandler func(c config.Config) error
 
 type runner struct {
 	appName string
 	args    []string
 	flgSet  *flag.FlagSet
-	// general flag
-	debug          bool
-	help           bool
-	cnf            config.Config
-	commandHandler CommandHandler
+	debug   bool
+	help    bool
+	cnf     config.Config
 }
 
 func NewRunner(appName string) Runner {
-	flgSet := flag.NewFlagSet(appName, flag.ExitOnError)
 	return &runner{
-		appName:        appName,
-		flgSet:         flgSet,
-		debug:          false,
-		help:           false,
-		cnf:            config.NewConfig(),
-		commandHandler: nil,
+		appName: appName,
+		flgSet:  flag.NewFlagSet(appName, flag.ContinueOnError),
+		cnf:     config.NewConfig(),
 	}
+}
+
+func (r *runner) LoadConfigFromEnvVars(envVars []string) error {
+	return r.cnf.LoadFromEnvVars(envVars)
 }
 
 func (r *runner) LoadConfigFromCommandArgs(args []string) error {
 	r.args = args
 	debugVal := r.flgSet.Bool("debug", false, "Enable debug")
 	helpVal := r.flgSet.Bool("help", false, "Show help")
+	r.cnf.SetupCommandArgs(r.flgSet)
+	var err error
 	if !r.flgSet.Parsed() {
 		if len(args) <= 1 {
 			return fmt.Errorf("invalid args len: %d", len(os.Args))
@@ -63,17 +66,12 @@ func (r *runner) LoadConfigFromCommandArgs(args []string) error {
 				r.debug = *debugVal
 			case "help":
 				r.help = *helpVal
+			default:
+				err = r.cnf.LoadFromCommandArgs(f.Name)
 			}
 		})
-		if err := r.cnf.LoadFromCommandArgs(args); err != nil {
-			return fmt.Errorf("while parsing args: %w", err)
-		}
 	}
-	return nil
-}
-
-func (r *runner) LoadConfigFromEnvVars(envVars []string) error {
-	return r.cnf.LoadFromEnvVars(envVars)
+	return err
 }
 
 func (r *runner) buildHelpString() string {
@@ -89,11 +87,7 @@ func (r *runner) buildHelpString() string {
 	return sb.String()
 }
 
-func (r *runner) SetCommandHandler(ch CommandHandler) {
-	r.commandHandler = ch
-}
-
-func (r *runner) Run() error {
+func (r *runner) Run(ch ConfigHandler) error {
 	if r.help {
 		fmt.Println(r.buildHelpString())
 		return nil
@@ -101,25 +95,10 @@ func (r *runner) Run() error {
 	if err := log.Init(r.debug); err != nil {
 		return fmt.Errorf("initializing log: %w", err)
 	}
+	defer log.Close()
 	log.Debugf("[Run] config: %+v", r.cnf)
-	return nil
-}
-
-// pathValue is defined to handle path type argument
-type pathValue struct {
-	path string
-}
-
-// implements Value interface for flag value argument
-func (pv *pathValue) String() string {
-	return pv.path
-}
-
-// implements Value interface for flag value argument
-func (pv *pathValue) Set(path string) error {
-	if _, err := os.Stat(path); err != nil {
-		return fmt.Errorf("not valid path %s: %w", path, err)
+	if err := ch(r.cnf); err != nil {
+		return fmt.Errorf("handling config %s: %w", r.cnf, err)
 	}
-	pv.path = path
 	return nil
 }

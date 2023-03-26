@@ -12,11 +12,11 @@ type Issue2md interface {
 
 type issue2md struct {
 	ghClient GitHubClient
-	expDir   *ExportDir
+	expDir   string
 	ghi      *IssueContent
 }
 
-func NewIssue2md(ghClient GitHubClient, expDir *ExportDir) Issue2md {
+func NewIssue2md(ghClient GitHubClient, expDir string) Issue2md {
 	return &issue2md{
 		ghClient: ghClient,
 		expDir:   expDir,
@@ -29,7 +29,7 @@ func (i2m *issue2md) Convert2md(issueURL string) error {
 		return fmt.Errorf("get issue content: %w", err)
 	}
 	mdStr := ic.GenerateContent("\n")
-	if err := os.WriteFile(filepath.Join(i2m.expDir.absPath, ic.GetMDFilename()), []byte(mdStr), 0755); err != nil {
+	if err := os.WriteFile(filepath.Join(i2m.expDir, ic.GetMDFilename()), []byte(mdStr), 0755); err != nil {
 		return fmt.Errorf("write file: %w", err)
 	}
 	return nil
