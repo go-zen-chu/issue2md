@@ -5,15 +5,6 @@ import (
 	"testing"
 )
 
-var (
-	testIC1 = IssueContent{
-		url:      "https://github.com/Codertocat/Hello-World/issues/1",
-		title:    "test issue",
-		labels:   []string{"a", "b"},
-		contents: []string{"test1", "test2"},
-	}
-)
-
 func TestNewIssueContent(t *testing.T) {
 	type args struct {
 		url      string
@@ -34,7 +25,7 @@ func TestNewIssueContent(t *testing.T) {
 				labels:   []string{"a", "b"},
 				contents: []string{"test1", "test2"},
 			},
-			&testIC1,
+			&TestIC1,
 		},
 	}
 	for _, tt := range tests {
@@ -69,10 +60,14 @@ func TestIssueContent_GetMDFilename(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ic := &IssueContent{
-				url:      tt.fields.url,
-				title:    tt.fields.title,
-				labels:   tt.fields.labels,
-				contents: tt.fields.contents,
+				frontMatter: &YAMLFrontMatter{
+					url:    tt.fields.url,
+					title:  tt.fields.title,
+					labels: tt.fields.labels,
+				},
+				content: &Content{
+					contents: tt.fields.contents,
+				},
 			}
 			if got := ic.GetMDFilename(); got != tt.want {
 				t.Errorf("IssueContent.GetMDFilename() = %v, want %v", got, tt.want)
@@ -92,42 +87,46 @@ func TestIssueContent_Print(t *testing.T) {
 		contentseparator string
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   string
+		name    string
+		fields  fields
+		args    args
+		want    string
+		wantErr bool
 	}{
 		{
-			"if valid IssueContent given, it should work",
+			"If valid IssueContent given, it should work",
 			fields{
-				url:      "https://github.com/Codertocat/Hello-World/issues/1",
-				title:    "test issue",
-				labels:   []string{"a", "b"},
-				contents: []string{"test1", "test2"},
+				url:      TestIC1.frontMatter.url,
+				title:    TestIC1.frontMatter.title,
+				labels:   TestIC1.frontMatter.labels,
+				contents: TestIC1.content.contents,
 			},
 			args{
 				"\n",
 			},
-			`---
-title: test issue
-url: https://github.com/Codertocat/Hello-World/issues/1
-labels: [a,b]
----
-test1
-test2
-`,
+			TestIC1Output,
+			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ic := &IssueContent{
-				url:      tt.fields.url,
-				title:    tt.fields.title,
-				labels:   tt.fields.labels,
-				contents: tt.fields.contents,
+				frontMatter: &YAMLFrontMatter{
+					url:    tt.fields.url,
+					title:  tt.fields.title,
+					labels: tt.fields.labels,
+				},
+				content: &Content{
+					contents: tt.fields.contents,
+				},
 			}
-			if got := ic.GenerateContent(tt.args.contentseparator); got != tt.want {
+			var got string
+			var err error
+			if got, err = ic.GenerateContent(tt.args.contentseparator); got != tt.want {
 				t.Errorf("IssueContent.Print() = %v, want %v", got, tt.want)
+			}
+			if (err == nil) == tt.wantErr {
+				t.Errorf("Expected wantErr: %t, but err is %s", tt.wantErr, err)
 			}
 		})
 	}

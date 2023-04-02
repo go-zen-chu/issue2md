@@ -4,14 +4,18 @@ import (
 	"fmt"
 	"os"
 
-	igh "github.com/go-zen-chu/issue2md/infra/github"
+	di2m "github.com/go-zen-chu/issue2md/domain/issue2md"
 	"github.com/go-zen-chu/issue2md/internal/config"
+	"github.com/go-zen-chu/issue2md/internal/di"
 	"github.com/go-zen-chu/issue2md/internal/log"
 	"github.com/go-zen-chu/issue2md/internal/runner"
 	ui2m "github.com/go-zen-chu/issue2md/usecase/issue2md"
 )
 
-func run(envVars []string, cmdArgs []string) error {
+func run(
+	envVars []string,
+	cmdArgs []string,
+	genGitHubClient func(c config.Config) di2m.GitHubClient) error {
 	r := runner.NewRunner("issue2md")
 	if err := r.LoadConfigFromEnvVars(envVars); err != nil {
 		return fmt.Errorf("load env var: %w", err)
@@ -20,8 +24,7 @@ func run(envVars []string, cmdArgs []string) error {
 		return fmt.Errorf("load args: %w", err)
 	}
 	if err := r.Run(func(c config.Config) error {
-		// TBD: implement di
-		ghClient := igh.NewGitHubClient(igh.Token(c.GetGitHubToken()))
+		ghClient := genGitHubClient(c)
 		i2muc := ui2m.NewIssue2mdUseCase(ghClient, "")
 		if err := i2muc.Convert2md(c.GetGitHubIssueURL()); err != nil {
 			return fmt.Errorf("convert to markdown: %w", err)
@@ -35,7 +38,8 @@ func run(envVars []string, cmdArgs []string) error {
 }
 
 func main() {
-	if err := run(os.Environ(), os.Args); err != nil {
+	di := di.NewDIContainer()
+	if err := run(os.Environ(), os.Args, di.GitHubClient); err != nil {
 		panic(fmt.Sprintf("run(): %s", err))
 	}
 }

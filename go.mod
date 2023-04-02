@@ -1,6 +1,6 @@
 module github.com/go-zen-chu/issue2md
 
-go 1.18
+go 1.19
 
 require (
 	github.com/google/go-github v17.0.0+incompatible
@@ -17,6 +17,8 @@ require (
 )
 
 require (
+	github.com/google/wire v0.5.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
