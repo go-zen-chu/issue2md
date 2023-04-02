@@ -1,6 +1,6 @@
 package issue2md
 
-// somehow, TestIC1 defined in issuecontent_test.go cannot be accessed from other file in same package.
+// NOTICE: somehow, TestIC1 defined in issuecontent_test.go cannot be accessed from other file in same package.
 var (
 	TestIC1 = IssueContent{
 		frontMatter: &YAMLFrontMatter{
