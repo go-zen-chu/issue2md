@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	di2m "github.com/go-zen-chu/issue2md/domain/issue2md"
@@ -8,6 +10,20 @@ import (
 )
 
 func Test_run(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("", "issue2md-*")
+	if err != nil {
+		t.Errorf("mkdir temp: %s", err)
+	}
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Errorf("remove all %s: %s", tmpDir, err)
+		}
+	}()
+	expDirAbsPath := filepath.Join(tmpDir, "issue")
+	if err := os.Mkdir(expDirAbsPath, 0777); err != nil {
+		t.Errorf("mkdir %s: %s", expDirAbsPath, err)
+	}
+	// generated
 	type args struct {
 		envVars         []string
 		cmdArgs         []string
@@ -19,16 +35,16 @@ func Test_run(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"When env vars given, it should fail due to test github token",
+			"When only env vars given, it should work",
 			args{
 				envVars: []string{
 					"ISSUE2MD_GITHUB_ISSUE_URL=https://github.com/Codertocat/Hello-World/issues/1",
 					"ISSUE2MD_GITHUB_TOKEN=invalid_token_for_test",
-					"ISSUE2MD_EXPORT_DIR=issues",
+					"ISSUE2MD_EXPORT_DIR=" + expDirAbsPath,
 				},
 				genGitHubClient: di2m.NewMockGitHubClient,
 			},
-			true,
+			false,
 		},
 		{
 			"When invalid env vars given, it should fail",
@@ -43,8 +59,13 @@ func Test_run(t *testing.T) {
 			true,
 		},
 		{
-			"When cmd args given, it should fail due to test github token",
+			"When both env vars and cmd args given, it should work and cmd args overwrite env vars values",
 			args{
+				envVars: []string{
+					"ISSUE2MD_GITHUB_ISSUE_URL=overwritten",
+					"ISSUE2MD_GITHUB_TOKEN=overwritten",
+					"ISSUE2MD_THIS_IS_INVALID=overwritten",
+				},
 				cmdArgs: []string{
 					"issue2md",
 					"-issue-url",
@@ -66,14 +87,14 @@ func Test_run(t *testing.T) {
 					"-github-token",
 					"invalid_token_for_test",
 					"-export-dir",
-					"../../root/",
+					"./../root/",
 				},
 				genGitHubClient: di2m.NewMockGitHubClient,
 			},
 			true,
 		},
 		{
-			"When valid relative path given, it should work but fail due to test github token",
+			"When valid relative path given, it should work",
 			args{
 				cmdArgs: []string{
 					"issue2md",
@@ -89,7 +110,7 @@ func Test_run(t *testing.T) {
 			true,
 		},
 		{
-			"When invalid root path given, it should fail",
+			"When invalid path given, it should fail",
 			args{
 				cmdArgs: []string{
 					"issue2md",
@@ -105,7 +126,7 @@ func Test_run(t *testing.T) {
 			true,
 		},
 		{
-			"When flag given, it should fail",
+			"When invalid command flag given, it should fail",
 			args{
 				cmdArgs: []string{
 					"issue2md",
@@ -133,16 +154,6 @@ func Test_run(t *testing.T) {
 				cmdArgs: []string{
 					"issue2md",
 					"-debug",
-				},
-				genGitHubClient: di2m.NewMockGitHubClient,
-			},
-			true,
-		},
-		{
-			"When no arg given, it should fail",
-			args{
-				cmdArgs: []string{
-					"issue2md",
 				},
 				genGitHubClient: di2m.NewMockGitHubClient,
 			},

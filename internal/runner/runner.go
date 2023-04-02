@@ -3,7 +3,6 @@ package runner
 import (
 	"flag"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/go-zen-chu/issue2md/internal/config"
@@ -47,15 +46,16 @@ func (r *runner) LoadConfigFromEnvVars(envVars []string) error {
 }
 
 func (r *runner) LoadConfigFromCommandArgs(args []string) error {
+	if len(args) <= 1 {
+		// no args given
+		return nil
+	}
 	r.args = args
 	debugVal := r.flgSet.Bool("debug", false, "Enable debug")
 	helpVal := r.flgSet.Bool("help", false, "Show help")
 	r.cnf.SetupCommandArgs(r.flgSet)
 	var err error
 	if !r.flgSet.Parsed() {
-		if len(args) <= 1 {
-			return fmt.Errorf("invalid args len: %d", len(os.Args))
-		}
 		if err := r.flgSet.Parse(args[1:]); err != nil {
 			return fmt.Errorf("parse args: %s", err)
 		}

@@ -23,9 +23,9 @@ type IssueContent struct {
 }
 
 type YAMLFrontMatter struct {
-	url    string   `yaml:"url"`
-	title  string   `yaml:"title"`
-	labels []string `yaml:"labels,flow"`
+	Title  string   `yaml:"title"`
+	URL    string   `yaml:"url"`
+	Labels []string `yaml:"labels,flow"`
 }
 
 type Content struct {
@@ -50,15 +50,15 @@ func LoadFrontMatterFromMarkdownFile(filePath string) (*YAMLFrontMatter, error) 
 }
 
 func (yfm *YAMLFrontMatter) GetIssueURL() string {
-	return yfm.url
+	return yfm.URL
 }
 
 func NewIssueContent(url, title string, labels []string, contents []string) *IssueContent {
 	return &IssueContent{
 		frontMatter: &YAMLFrontMatter{
-			url:    url,
-			title:  title,
-			labels: labels,
+			URL:    url,
+			Title:  title,
+			Labels: labels,
 		},
 		content: &Content{
 			contents: contents,
@@ -88,7 +88,7 @@ func LoadFromMarkdownFile(filePath string) (*IssueContent, error) {
 }
 
 func (ic *IssueContent) GetMDFilename() string {
-	return ic.frontMatter.title + ".md"
+	return ic.frontMatter.Title + ".md"
 }
 
 func (ic *IssueContent) GenerateContent(contentseparator string) (string, error) {

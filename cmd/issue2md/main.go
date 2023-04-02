@@ -25,7 +25,7 @@ func run(
 	}
 	if err := r.Run(func(c config.Config) error {
 		ghClient := genGitHubClient(c)
-		i2muc := ui2m.NewIssue2mdUseCase(ghClient, "")
+		i2muc := ui2m.NewIssue2mdUseCase(ghClient, c.GetExportDir())
 		if err := i2muc.Convert2md(c.GetGitHubIssueURL()); err != nil {
 			return fmt.Errorf("convert to markdown: %w", err)
 		}

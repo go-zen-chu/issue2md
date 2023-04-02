@@ -4,9 +4,9 @@ package issue2md
 var (
 	TestIC1 = IssueContent{
 		frontMatter: &YAMLFrontMatter{
-			url:    "https://github.com/Codertocat/Hello-World/issues/1",
-			title:  "test issue",
-			labels: []string{"a", "b"},
+			URL:    "https://github.com/Codertocat/Hello-World/issues/1",
+			Title:  "test issue",
+			Labels: []string{"a", "b"},
 		},
 		content: &Content{
 			contents: []string{"test1", "test2"},
@@ -18,7 +18,7 @@ const (
 	TestIC1Output = `---
 title: test issue
 url: https://github.com/Codertocat/Hello-World/issues/1
-labels: [a,b]
+labels: [a, b]
 ---
 test1
 test2

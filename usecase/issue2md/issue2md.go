@@ -31,7 +31,7 @@ func (imu *issue2mdUsecase) Convert2md(issueURL string) error {
 	// return error when duplicate file already exists
 	files, err := os.ReadDir(imu.expDir)
 	if err != nil {
-		return fmt.Errorf("find existed file: %w", err)
+		return fmt.Errorf("read dir %s: %w", imu.expDir, err)
 	}
 	for _, file := range files {
 		fi, err := file.Info()
@@ -74,7 +74,7 @@ func (imu *issue2mdUsecase) FindDuplicateFile() (string, error) {
 	for _, file := range files {
 		fi, err := file.Info()
 		if err != nil {
-			errg = fmt.Errorf("%w\nfile info:%w", errg, err)
+			errg = fmt.Errorf("%w\nfile info:%s", errg, err)
 			continue
 		}
 		if fi.IsDir() {
@@ -86,7 +86,7 @@ func (imu *issue2mdUsecase) FindDuplicateFile() (string, error) {
 		absPath := filepath.Join(imu.expDir, fi.Name())
 		yfm, err := di2m.LoadFrontMatterFromMarkdownFile(absPath)
 		if err != nil {
-			errg = fmt.Errorf("%w\nparse markdown:%w", errg, err)
+			errg = fmt.Errorf("%w\nparse markdown:%s", errg, err)
 			continue
 		}
 		iurl := yfm.GetIssueURL()

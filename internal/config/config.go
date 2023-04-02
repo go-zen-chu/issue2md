@@ -37,31 +37,31 @@ type config struct {
 
 // validate and check relative or absolute path
 type exportDirPath struct {
-	cmdArgPath string
-	absPath    string
+	givenPath string
+	absPath   string
 }
 
-func newExportDirPath(cmdArgPath string) (*exportDirPath, error) {
+func newExportDirPath(givenPath string) (*exportDirPath, error) {
 	edp := &exportDirPath{}
-	if strings.HasPrefix(cmdArgPath, "..") {
-		return nil, fmt.Errorf("traversing dir is not allowed: %s", cmdArgPath)
+	if strings.HasPrefix(givenPath, "..") || strings.Contains(givenPath, "/../") {
+		return nil, fmt.Errorf("traversing dir is not allowed: %s", givenPath)
 	}
-	edp.cmdArgPath = cmdArgPath
-	if _, err := os.Stat(cmdArgPath); err != nil {
+	edp.givenPath = givenPath
+	if _, err := os.Stat(givenPath); err != nil {
 		// check whether relative path
 		var wd string
 		var err error
 		if wd, err = os.Getwd(); err != nil {
 			return nil, err
 		}
-		absPath := filepath.Join(wd, cmdArgPath)
+		absPath := filepath.Join(wd, givenPath)
 		if _, err := os.Stat(absPath); err != nil {
 			return nil, fmt.Errorf("no such path: %s", absPath)
 		}
 		edp.absPath = absPath
 	} else {
 		// if path exists, it's absolute path
-		edp.absPath = cmdArgPath
+		edp.absPath = givenPath
 	}
 	return edp, nil
 }
@@ -77,9 +77,9 @@ func NewConfig() Config {
 func (c *config) String() string {
 	ghToken := "<empty>"
 	if len(c.ghToken) > 0 {
+		// make sure NOT TO print credentials
 		ghToken = "<masked>"
 	}
-	// make sure NOT TO print credentials
 	return fmt.Sprintf("config{exportDir:%s,issueURL:%s,token:%s}", c.exportDirPath, c.ghIssueUrl, ghToken)
 }
 

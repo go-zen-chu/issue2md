@@ -14,12 +14,12 @@ func NewMockGitHubClient(config config.Config) GitHubClient {
 
 func (m *mockGitHubClient) GetIssueContent(issueURL string) (*IssueContent, error) {
 	switch issueURL {
-	case TestIC1.frontMatter.url:
+	case TestIC1.frontMatter.URL:
 		return &IssueContent{
 			frontMatter: &YAMLFrontMatter{
-				url:    TestIC1.frontMatter.url,
-				title:  TestIC1.frontMatter.title,
-				labels: TestIC1.frontMatter.labels,
+				URL:    TestIC1.frontMatter.URL,
+				Title:  TestIC1.frontMatter.Title,
+				Labels: TestIC1.frontMatter.Labels,
 			},
 			content: &Content{
 				contents: TestIC1.content.contents,

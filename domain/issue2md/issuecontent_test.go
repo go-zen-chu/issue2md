@@ -20,10 +20,10 @@ func TestNewIssueContent(t *testing.T) {
 		{
 			"if valid args given, it should create new IssueContent",
 			args{
-				url:      "https://github.com/Codertocat/Hello-World/issues/1",
-				title:    "test issue",
-				labels:   []string{"a", "b"},
-				contents: []string{"test1", "test2"},
+				url:      TestIC1.frontMatter.URL,
+				title:    TestIC1.frontMatter.Title,
+				labels:   TestIC1.frontMatter.Labels,
+				contents: TestIC1.content.contents,
 			},
 			&TestIC1,
 		},
@@ -61,9 +61,9 @@ func TestIssueContent_GetMDFilename(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ic := &IssueContent{
 				frontMatter: &YAMLFrontMatter{
-					url:    tt.fields.url,
-					title:  tt.fields.title,
-					labels: tt.fields.labels,
+					URL:    tt.fields.url,
+					Title:  tt.fields.title,
+					Labels: tt.fields.labels,
 				},
 				content: &Content{
 					contents: tt.fields.contents,
@@ -96,9 +96,9 @@ func TestIssueContent_Print(t *testing.T) {
 		{
 			"If valid IssueContent given, it should work",
 			fields{
-				url:      TestIC1.frontMatter.url,
-				title:    TestIC1.frontMatter.title,
-				labels:   TestIC1.frontMatter.labels,
+				url:      TestIC1.frontMatter.URL,
+				title:    TestIC1.frontMatter.Title,
+				labels:   TestIC1.frontMatter.Labels,
 				contents: TestIC1.content.contents,
 			},
 			args{
@@ -112,9 +112,9 @@ func TestIssueContent_Print(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ic := &IssueContent{
 				frontMatter: &YAMLFrontMatter{
-					url:    tt.fields.url,
-					title:  tt.fields.title,
-					labels: tt.fields.labels,
+					URL:    tt.fields.url,
+					Title:  tt.fields.title,
+					Labels: tt.fields.labels,
 				},
 				content: &Content{
 					contents: tt.fields.contents,
