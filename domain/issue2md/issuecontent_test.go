@@ -20,12 +20,12 @@ func TestNewIssueContent(t *testing.T) {
 		{
 			"if valid args given, it should create new IssueContent",
 			args{
-				url:      TestIC1.frontMatter.URL,
-				title:    TestIC1.frontMatter.Title,
-				labels:   TestIC1.frontMatter.Labels,
-				contents: TestIC1.content.contents,
+				url:      testIC1.frontMatter.URL,
+				title:    testIC1.frontMatter.Title,
+				labels:   testIC1.frontMatter.Labels,
+				contents: testIC1.content.contents,
 			},
-			&TestIC1,
+			&testIC1,
 		},
 	}
 	for _, tt := range tests {
@@ -50,7 +50,7 @@ func TestIssueContent_GetMDFilename(t *testing.T) {
 		want   string
 	}{
 		{
-			"if valid fields given, it should work",
+			"if valid title given, it should work",
 			fields{
 				title: "test issue",
 			},
@@ -96,15 +96,15 @@ func TestIssueContent_Print(t *testing.T) {
 		{
 			"If valid IssueContent given, it should work",
 			fields{
-				url:      TestIC1.frontMatter.URL,
-				title:    TestIC1.frontMatter.Title,
-				labels:   TestIC1.frontMatter.Labels,
-				contents: TestIC1.content.contents,
+				url:      testIC1.frontMatter.URL,
+				title:    testIC1.frontMatter.Title,
+				labels:   testIC1.frontMatter.Labels,
+				contents: testIC1.content.contents,
 			},
 			args{
 				"\n",
 			},
-			TestIC1Output,
+			testIC1Output,
 			false,
 		},
 	}

@@ -1,8 +1,8 @@
 package issue2md
 
-// NOTICE: somehow, TestIC1 defined in issuecontent_test.go cannot be accessed from other file in same package.
+// NOTICE: somehow, testIC1 defined in issuecontent_test.go cannot be accessed from other file in same package.
 var (
-	TestIC1 = IssueContent{
+	testIC1 = IssueContent{
 		frontMatter: &YAMLFrontMatter{
 			URL:    "https://github.com/Codertocat/Hello-World/issues/1",
 			Title:  "test issue",
@@ -15,7 +15,7 @@ var (
 )
 
 const (
-	TestIC1Output = `---
+	testIC1Output = `---
 title: test issue
 url: https://github.com/Codertocat/Hello-World/issues/1
 labels: [a, b]
