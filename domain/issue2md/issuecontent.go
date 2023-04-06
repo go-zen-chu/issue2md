@@ -39,14 +39,14 @@ func LoadFrontMatterFromMarkdownFile(filePath string) (*YAMLFrontMatter, error) 
 		return nil, fmt.Errorf("read file: %w", err)
 	}
 	matches := markdownRegex.FindSubmatch(bt)
-	if matches != nil {
+	if matches == nil {
 		return nil, fmt.Errorf("could not find front matter in file: %s", filePath)
 	}
-	var yfm *YAMLFrontMatter
-	if err := yaml.Unmarshal(matches[1], yfm); err != nil {
+	var yfm YAMLFrontMatter
+	if err := yaml.Unmarshal(matches[1], &yfm); err != nil {
 		return nil, fmt.Errorf("unmarshal yaml: %s\n%s", filePath, matches[1])
 	}
-	return yfm, nil
+	return &yfm, nil
 }
 
 func (yfm *YAMLFrontMatter) GetIssueURL() string {

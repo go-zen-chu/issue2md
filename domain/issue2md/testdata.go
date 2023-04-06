@@ -12,6 +12,16 @@ var (
 			contents: []string{"test1", "test2"},
 		},
 	}
+	testIC2 = IssueContent{
+		frontMatter: &YAMLFrontMatter{
+			URL:    "https://github.com/Codertocat/Hello-World/issues/2",
+			Title:  "test issue2",
+			Labels: []string{"a"},
+		},
+		content: &Content{
+			contents: []string{"test1", "test2", "test3", "very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_long_text"},
+		},
+	}
 )
 
 const (

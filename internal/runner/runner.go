@@ -54,7 +54,7 @@ func (r *runner) LoadConfigFromCommandArgs(args []string) error {
 	debugVal := r.flgSet.Bool("debug", false, "Enable debug")
 	helpVal := r.flgSet.Bool("help", false, "Show help")
 	r.cnf.SetupCommandArgs(r.flgSet)
-	var err error
+	var errg error
 	if !r.flgSet.Parsed() {
 		if err := r.flgSet.Parse(args[1:]); err != nil {
 			return fmt.Errorf("parse args: %s", err)
@@ -67,11 +67,13 @@ func (r *runner) LoadConfigFromCommandArgs(args []string) error {
 			case "help":
 				r.help = *helpVal
 			default:
-				err = r.cnf.LoadFromCommandArgs(f.Name)
+				if err := r.cnf.LoadFromCommandArgs(f.Name); err != nil {
+					errg = fmt.Errorf("%w, handling flag %s: %s", errg, f.Name, err)
+				}
 			}
 		})
 	}
-	return err
+	return errg
 }
 
 func (r *runner) buildHelpString() string {

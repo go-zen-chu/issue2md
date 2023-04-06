@@ -47,7 +47,7 @@ func newExportDirPath(givenPath string) (*exportDirPath, error) {
 		return nil, fmt.Errorf("traversing dir is not allowed: %s", givenPath)
 	}
 	edp.givenPath = givenPath
-	if _, err := os.Stat(givenPath); err != nil {
+	if !filepath.IsAbs(givenPath) {
 		// check whether relative path
 		var wd string
 		var err error
@@ -130,7 +130,6 @@ func (c *config) LoadFromCommandArgs(flagName string) error {
 		c.ghIssueUrl = *ghIssueUrlVal
 	case "github-token":
 		c.ghToken = *ghTokenVal
-
 	}
 	return nil
 }

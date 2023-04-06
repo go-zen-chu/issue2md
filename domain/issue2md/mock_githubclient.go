@@ -25,6 +25,17 @@ func (m *mockGitHubClient) GetIssueContent(issueURL string) (*IssueContent, erro
 				contents: testIC1.content.contents,
 			},
 		}, nil
+	case testIC2.frontMatter.URL:
+		return &IssueContent{
+			frontMatter: &YAMLFrontMatter{
+				URL:    testIC2.frontMatter.URL,
+				Title:  testIC2.frontMatter.Title,
+				Labels: testIC2.frontMatter.Labels,
+			},
+			content: &Content{
+				contents: testIC2.content.contents,
+			},
+		}, nil
 	}
 	return nil, errors.New("unexpected url")
 }
