@@ -28,31 +28,6 @@ func NewIssue2mdUseCase(ghClient di2m.GitHubClient, expDir string) Issue2mdUseCa
 
 // Usecase for converting github issue to markdown
 func (imu *issue2mdUsecase) Convert2md(issueURL string) error {
-	// return error when duplicate file already exists
-	files, err := os.ReadDir(imu.expDir)
-	if err != nil {
-		return fmt.Errorf("read dir %s: %w", imu.expDir, err)
-	}
-	for _, file := range files {
-		fi, err := file.Info()
-		if err != nil {
-			return fmt.Errorf("checking file info (%s): %w", file.Name(), err)
-		}
-		if fi.IsDir() {
-			continue
-		}
-		if !strings.HasSuffix(fi.Name(), ".md") {
-			continue
-		}
-		absPath := filepath.Join(imu.expDir, fi.Name())
-		yfm, err := di2m.LoadFrontMatterFromMarkdownFile(absPath)
-		if err != nil {
-			return fmt.Errorf("could not load file %s: %w", absPath, err)
-		}
-		if yfm.GetIssueURL() == issueURL {
-			return fmt.Errorf("markdown with same issueURL (%s) found: %s", issueURL, absPath)
-		}
-	}
 	return imu.i2m.Convert2md(issueURL)
 }
 

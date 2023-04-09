@@ -47,7 +47,39 @@ func Test_run(t *testing.T) {
 			false,
 		},
 		{
-			`When both env vars and cmd args given, it should work and cmd args overwrite env vars values.
+			"When cmd args given, it should be successful when a markdown with same issue url but same title exists",
+			args{
+				cmdArgs: []string{
+					"issue2md",
+					"-issue-url",
+					"https://github.com/Codertocat/Hello-World/issues/1",
+					"-github-token",
+					"test_token",
+					"-export-dir",
+					expDirAbsPath,
+				},
+				genGitHubClient: di2m.NewMockGitHubClient,
+			},
+			false,
+		},
+		{
+			"When same issue url with different title is trying to be exported, it should fail",
+			args{
+				cmdArgs: []string{
+					"issue2md",
+					"-issue-url",
+					"https://github.com/Codertocat/Hello-World/issues/1",
+					"-github-token",
+					"test_token",
+					"-export-dir",
+					expDirAbsPath,
+				},
+				genGitHubClient: di2m.NewMockFailGitHubClient,
+			},
+			true,
+		},
+		{
+			`When both env vars and cmd args given, it should be successful and cmd args overwrite env vars values.
 				Export will succeed when exporting an issue that is not exists`,
 			args{
 				envVars: []string{
@@ -133,8 +165,7 @@ func Test_run_relative_path(t *testing.T) {
 			false,
 		},
 		{
-			// this test check relative path, make sure no file or valid md file exists
-			"When valid relative path given, it should get error because same issue file already exists",
+			"When valid relative path given in cmd args, it should be successful",
 			args{
 				cmdArgs: []string{
 					"issue2md",
@@ -147,7 +178,7 @@ func Test_run_relative_path(t *testing.T) {
 				},
 				genGitHubClient: di2m.NewMockGitHubClient,
 			},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {

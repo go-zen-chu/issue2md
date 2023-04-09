@@ -39,3 +39,26 @@ func (m *mockGitHubClient) GetIssueContent(issueURL string) (*IssueContent, erro
 	}
 	return nil, errors.New("unexpected url")
 }
+
+type mockFailGitHubClient struct{}
+
+func NewMockFailGitHubClient(config config.Config) GitHubClient {
+	return &mockFailGitHubClient{}
+}
+
+func (m *mockFailGitHubClient) GetIssueContent(issueURL string) (*IssueContent, error) {
+	switch issueURL {
+	case testIC1.frontMatter.URL:
+		return &IssueContent{
+			frontMatter: &YAMLFrontMatter{
+				URL:    testIC1.frontMatter.URL,
+				Title:  "different title for failure",
+				Labels: testIC1.frontMatter.Labels,
+			},
+			content: &Content{
+				contents: testIC1.content.contents,
+			},
+		}, nil
+	}
+	return nil, errors.New("unexpected url")
+}
