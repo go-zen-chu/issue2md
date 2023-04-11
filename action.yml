@@ -1,30 +1,30 @@
-name: 'issue2md'
-author: 'Akira Masuda (go-zen-chu)'
-description: 'Converting GitHub issue to markdown'
+name: "issue2md"
+author: "Akira Masuda (go-zen-chu)"
+description: "Converting GitHub issue to markdown"
 inputs:
   # required
   github-token:
-    description: 'GitHub token to read/write issue & repository'
+    description: "GitHub token to read/write issue & repository"
     required: true
   issue-url:
-    description: 'GitHub issue URL'
+    description: "GitHub issue URL"
     required: true
   export-dir:
-    description: 'A directory in your repository to export markdown. Default is `.` (repository root)'
-    required: true
-    default: '.'
+    description: "A directory in your repository to export markdown. Default is `.` (repository root)"
+    required: false
+    default: "."
   # optional
   debug:
-    description: 'Run issue2md with debug mode'
-    default: false 
+    description: "Run issue2md with debug mode"
+    default: false
 runs:
-  using: 'docker'
-  image: 'docker://amasuda/issue2md:latest'
+  using: "docker"
+  image: "docker://amasuda/issue2md:latest"
   args:
-    - -github-token=${{ inputs.github-token }} 
+    - -github-token=${{ inputs.github-token }}
     - -issue-url=${{ inputs.issue-url }}
     - -export-dir=${{ inputs.export-dir }}
-    - -debug=${{ inputs.debug }} 
+    - -debug=${{ inputs.debug }}
 branding:
-  icon: 'book'
-  color: 'blue'
+  icon: "book"
+  color: "blue"
