@@ -7,9 +7,9 @@ jobs:
   issue2md:
     runs-on: ubuntu-latest
     name: Convert closed issue to markdown with test action
-    # make sure kicking this workflow when issue has `test` label 
+    # make sure kicking this workflow when issue has `test` label
     if: ${{ contains(github.event.issue.labels.*.name, 'test') &&
-            github.event.issue.state_reason == 'completed' }}
+      github.event.issue.state_reason == 'completed' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -33,12 +33,33 @@ jobs:
       - name: Push to main branch if any updates exist
         if: steps.diff.outcome == 'failure'
         run: |
-            set -e
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git diff
-            git diff-index HEAD
-            git add --all
-            git commit -m "[skip ci] [GitHub Action] Update automatically"
-            git push
-
+          set -e
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git diff
+          git diff-index HEAD
+          git add --all
+          git commit -m "[skip ci] [GitHub Action] Update automatically"
+          git push
+      - name: Send custom JSON data to Slack when issue2md failed
+        if: failure() && steps.issue2md.outcome == 'failure'
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          payload: |
+            {
+              "text": ":warning: GitHub Action build result: ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ job.status }}\nActions URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}"
+                  }
+                }
+              ]
+            }
+        env:
+          # currently, it is set to my personal slack channel
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
