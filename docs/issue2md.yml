@@ -19,6 +19,28 @@ jobs:
           issue-url: ${{ github.event.issue.html_url }}
           # By default, this action stores markdown to repository root. If you want to change export dir, make directory and change setting below.
           #export-dir: ./issues
+      # If you use slack, uncomment step below to POST failure notice when issue2md failed (requires SLACK_WEBHOOK_URL)
+      # - name: Send custom JSON data to Slack when issue2md failed
+      #   if: failure() && steps.issue2md.outcome == 'failure'
+      #   id: slack
+      #   uses: slackapi/slack-github-action@v1.23.0
+      #   with:
+      #     payload: |
+      #       {
+      #         "text": ":warning: GitHub Action build result: ${{ job.status }}",
+      #         "blocks": [
+      #           {
+      #             "type": "section",
+      #             "text": {
+      #               "type": "mrkdwn",
+      #               "text": "GitHub Action build result: ${{ job.status }}\nActions URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      #             }
+      #           }
+      #         ]
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       - name: Check diff
         id: diff
         run: |
@@ -37,25 +59,3 @@ jobs:
           git add --all
           git commit -m "[skip ci] [GitHub Action] Update automatically"
           git push
-      # If you use slack, uncomment step below to POST failure notice when issue2md failed (requires SLACK_WEBHOOK_URL)
-      # - name: Send custom JSON data to Slack when issue2md failed
-      #   if: failure() && steps.issue2md.outcome == 'failure'
-      #   id: slack
-      #   uses: slackapi/slack-github-action@v1.23.0
-      #   with:
-      #     payload: |
-      #       {
-      #         "text": ":warning: GitHub Action build result: ${{ job.status }}",
-      #         "blocks": [
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "GitHub Action build result: ${{ job.status }}\nActions URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}"
-      #             }
-      #           }
-      #         ]
-      #       }
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
