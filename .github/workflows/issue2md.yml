@@ -1,3 +1,4 @@
+# actual working sample for dogfooding using latest issue2md action
 name: issue2md
 on:
   issues:
@@ -8,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Convert closed issue to markdown with published action
     if: ${{ !contains(github.event.issue.labels.*.name, 'test') &&
-            github.event.issue.state_reason == 'completed' }}
+      github.event.issue.state_reason == 'completed' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -28,11 +29,11 @@ jobs:
       - name: Push to main branch if any updates exists
         if: steps.diff.outcome == 'failure'
         run: |
-            set -e
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git diff
-            git diff-index HEAD
-            git add --all
-            git commit -m "[skip ci] [GitHub Action] Update automatically"
-            git push
+          set -e
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git diff
+          git diff-index HEAD
+          git add --all
+          git commit -m "[skip ci] [GitHub Action] Update automatically"
+          git push
