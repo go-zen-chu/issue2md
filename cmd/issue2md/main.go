@@ -26,10 +26,21 @@ func run(
 	if err := r.Run(func(c config.Config) error {
 		ghClient := genGitHubClient(c)
 		i2muc := ui2m.NewIssue2mdUseCase(ghClient, c.GetExportDir())
-		if err := i2muc.Convert2md(c.GetGitHubIssueURL()); err != nil {
-			return fmt.Errorf("convert to markdown: %w", err)
+		if c.GetCheckDups() {
+			res, err := i2muc.CheckDuplicateIssueFile()
+			if len(res) == 0 {
+				res = "No duplicate issueURL markdown files :tada:"
+			}
+			fmt.Printf("[CheckDuplicateIssueURLFile] %s", res)
+			if err != nil {
+				fmt.Printf("error: %s", err)
+			}
+		} else {
+			if err := i2muc.Convert2md(c.GetGitHubIssueURL()); err != nil {
+				return fmt.Errorf("convert to markdown: %w", err)
+			}
+			log.Infof("Export issue %s to %s, succeeded\n", c.GetGitHubIssueURL(), c.GetExportDir())
 		}
-		log.Infof("Export issue %s to %s, succeeded\n", c.GetGitHubIssueURL(), c.GetExportDir())
 		return nil
 	}); err != nil {
 		return fmt.Errorf("while running: %w", err)
