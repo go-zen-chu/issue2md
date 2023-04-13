@@ -12,6 +12,7 @@ import (
 
 type Issue2mdUseCase interface {
 	Convert2md(issueURL string) error
+	CheckDuplicateIssueFile() (string, error)
 }
 
 type issue2mdUsecase struct {
@@ -38,7 +39,7 @@ type fileMeta struct {
 }
 
 // Usecase for finding duplicate file in export-dir
-func (imu *issue2mdUsecase) FindDuplicateFile() (string, error) {
+func (imu *issue2mdUsecase) CheckDuplicateIssueFile() (string, error) {
 	files, err := os.ReadDir(imu.expDir)
 	if err != nil {
 		return "", fmt.Errorf("read dirs: %w", err)
@@ -71,15 +72,16 @@ func (imu *issue2mdUsecase) FindDuplicateFile() (string, error) {
 				frontMatter: yfm,
 				absPath:     absPath,
 			}
+			// unique issue markdown
 			continue
 		}
-		sb.WriteString("find duplicate issue files:\n")
+		sb.WriteString("Find duplicate issue files:\n")
 		sb.WriteString(fileDict[iurl].absPath)
-		sb.WriteString(": ")
+		sb.WriteString(", [Modified] ")
 		sb.WriteString(fileDict[iurl].finfo.ModTime().String())
 		sb.WriteString("\n")
 		sb.WriteString(absPath)
-		sb.WriteString(": ")
+		sb.WriteString(", [Modified] ")
 		sb.WriteString(fi.ModTime().String())
 		sb.WriteString("\n")
 	}

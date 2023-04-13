@@ -9,14 +9,19 @@ import (
 )
 
 const (
-	envPrefix = "ISSUE2MD_"
+	envPrefix         = "ISSUE2MD_"
+	envExportDir      = envPrefix + "EXPORT_DIR"
+	envGitHubIssueURL = envPrefix + "GITHUB_ISSUE_URL"
+	envGitHubToken    = envPrefix + "GITHUB_TOKEN"
 )
 
 var (
+	// singleton config
 	cnf           *config
 	edVal         *string
 	ghIssueUrlVal *string
 	ghTokenVal    *string
+	checkDupsVal  *bool
 )
 
 // Config create interface for handling application config
@@ -27,12 +32,14 @@ type Config interface {
 	GetExportDir() string
 	GetGitHubIssueURL() string
 	GetGitHubToken() string
+	GetCheckDups() bool
 }
 
 type config struct {
 	exportDirPath *exportDirPath
 	ghIssueUrl    string
 	ghToken       string
+	checkDups     bool
 }
 
 // validate and check relative or absolute path
@@ -90,17 +97,16 @@ func (c *config) LoadFromEnvVars(envVars []string) error {
 		if !strings.HasPrefix(evs[0], envPrefix) {
 			continue
 		}
-		evKey := strings.TrimPrefix(evs[0], envPrefix)
-		switch evKey {
-		case "EXPORT_DIR":
+		switch evs[0] {
+		case envExportDir:
 			edp, err := newExportDirPath(evs[1])
 			if err != nil {
 				return err
 			}
 			c.exportDirPath = edp
-		case "GITHUB_ISSUE_URL":
+		case envGitHubIssueURL:
 			c.ghIssueUrl = evs[1]
-		case "GITHUB_TOKEN":
+		case envGitHubToken:
 			c.ghToken = evs[1]
 		default:
 			err = fmt.Errorf("%w: invalid env var %s", err, ev)
@@ -113,9 +119,10 @@ func (c *config) LoadFromEnvVars(envVars []string) error {
 }
 
 func (c *config) SetupCommandArgs(flgSet *flag.FlagSet) {
-	edVal = flgSet.String("export-dir", "./", "Target directory to export issue as markdowns. Default is repository root")
-	ghIssueUrlVal = flgSet.String("issue-url", "", fmt.Sprintf("Set GitHub issue url (%sGITHUB_ISSUE_URL)", envPrefix))
-	ghTokenVal = flgSet.String("github-token", "", fmt.Sprintf("[WARN: recommended set from envvar %sGITHUB_TOKEN] Set GitHub Token (%sGITHUB_TOKEN)", envPrefix, envPrefix))
+	edVal = flgSet.String("export-dir", "./", fmt.Sprintf("Target directory to export issue as markdowns. Default is repository root ./ (%s)", envExportDir))
+	ghIssueUrlVal = flgSet.String("issue-url", "", fmt.Sprintf("Set GitHub issue url (%s)", envGitHubIssueURL))
+	ghTokenVal = flgSet.String("github-token", "", fmt.Sprintf("[WARN: recommended set from envvar %s] Set GitHub Token (%s)", envGitHubToken, envGitHubToken))
+	checkDupsVal = flgSet.Bool("check-dups", false, "Find duplicate issueURL markdowns in export-dir")
 }
 
 func (c *config) LoadFromCommandArgs(flagName string) error {
@@ -130,18 +137,24 @@ func (c *config) LoadFromCommandArgs(flagName string) error {
 		c.ghIssueUrl = *ghIssueUrlVal
 	case "github-token":
 		c.ghToken = *ghTokenVal
+	case "check-dups":
+		c.checkDups = *checkDupsVal
 	}
 	return nil
 }
 
 func (c *config) GetExportDir() string {
-	return cnf.exportDirPath.absPath
+	return c.exportDirPath.absPath
 }
 
 func (c *config) GetGitHubIssueURL() string {
-	return cnf.ghIssueUrl
+	return c.ghIssueUrl
 }
 
 func (c *config) GetGitHubToken() string {
-	return cnf.ghToken
+	return c.ghToken
+}
+
+func (c *config) GetCheckDups() bool {
+	return c.checkDups
 }
