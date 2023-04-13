@@ -10,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Convert issue to markdown
-        uses: go-zen-chu/issue2md@main
+        uses: ./tests/
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           issue-url: ${{ github.event.issue.html_url }}
