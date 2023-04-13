@@ -9,11 +9,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Convert issue to markdown
-        uses: ./tests/
+      - name: Check and list duplicated issue markdowns
+        uses: go-zen-chu/issue2md@main
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-url: ${{ github.event.issue.html_url }}
           # By default, this action stores markdown to repository root. If you want to change export dir, make directory and change setting below.
           export-dir: ./issues
           check-dups: true
