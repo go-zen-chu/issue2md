@@ -45,10 +45,11 @@ If you edited upper file locally, then hit `git diff` and merge to the latest fi
 ## Parameters
 
 | name         | value  | required | default | description                                                                                                                                                                                                             |
-|--------------|--------|----------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------ | ------ | -------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | github_token | string | *        | -       | [GitHub token](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow) for r/w issue and repo. Using `${{ secrets.GITHUB_TOKEN }}` as inputs satisfies. |
 | issue-url    | string | *        | -       | Issue url for exporting to markdown. Using `${{ github.event.issue.html_url }}` as inputs satisfies.                                                                                                                    |
-| export-dir   | string |          | `.`     | A directory in your repository to export markdown. Default is `.` (repository root)                                                                                                                             |
+| export-dir   | string |          | `.`     | A directory in your repository to export markdown. Default is `.` (repository root)                                                                                                                                     |
+| check-dups   | bool   |          | false   | Optional flag for checking duplicate issue URL markdown exists in export-dir. If there is any, issue2md print which files are duplicated.                                                                               |
 
 ## Development
 
@@ -58,11 +59,11 @@ You can test this action locally by, setting ISSUE2MD_GITHUB_TOKEN envvar and ru
 
 ```bash
 # With go
-go run cmd/issue2md/*.go -debug -export-dir=./issues -issue-url=https://github.com/go-zen-chu/issue2md/issues/2
+go run cmd/issue2md -debug -export-dir=./issues -issue-url=https://github.com/go-zen-chu/issue2md/issues/2
 
 # or using nerdctl. Replace `lima nerdctl` to `docker` if you use docker
 # build image
-GOARCH=amd64 GOOS=linux go build -v -o issue2md ./cmd/issue2md/*.go; lima nerdctl build -t issue2md:latest .
+GOARCH=amd64 GOOS=linux go build -v -o issue2md ./cmd/issue2md; lima nerdctl build -t issue2md:latest .
 # run on container
 lima nerdctl run -it -e ISSUE2MD_GITHUB_TOKEN=${ISSUE2MD_GITHUB_TOKEN} --rm issue2md:latest -- -debug -issue-url=https://github.com/go-zen-chu/issue2md/issues/2 
 ```
@@ -75,6 +76,6 @@ lima nerdctl run -it -e ISSUE2MD_GITHUB_TOKEN=${ISSUE2MD_GITHUB_TOKEN} --rm issu
 
 ## Appendix
 
-### Metadata format
+### Markdown metadata format
 
 Metadata of an issue are stored with [YAML Front-matter](https://jekyllrb.com/docs/front-matter/) format.
