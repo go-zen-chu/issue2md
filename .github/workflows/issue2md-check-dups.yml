@@ -16,6 +16,7 @@ jobs:
           issue-url: ${{ github.event.issue.html_url }}
           # By default, this action stores markdown to repository root. If you want to change export dir, make directory and change setting below.
           export-dir: ./issues
+          check-dups: true
       - name: Send custom JSON data to Slack when issue2md failed
         if: failure()
         id: slack
