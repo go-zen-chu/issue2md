@@ -31,7 +31,7 @@ func run(
 			if len(res) == 0 {
 				res = "No duplicate issueURL markdown files :tada:"
 			}
-			fmt.Printf("[CheckDuplicateIssueURLFile] %s", res)
+			fmt.Printf("[CheckDuplicateIssueURLFile] %s\n", res)
 			if err != nil {
 				fmt.Printf("error: %s", err)
 			}
