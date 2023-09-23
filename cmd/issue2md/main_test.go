@@ -9,7 +9,7 @@ import (
 	"github.com/go-zen-chu/issue2md/internal/config"
 )
 
-func Test_run(t *testing.T) {
+func Test_run_convert2md(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "issue2md-*")
 	if err != nil {
 		t.Errorf("mkdir temp: %s", err)
@@ -122,7 +122,7 @@ func Test_run(t *testing.T) {
 }
 
 // Test cases for relative path. We need to remove file exported in relative path after test performed.
-func Test_run_relative_path(t *testing.T) {
+func Test_run_convert2md_relative_path(t *testing.T) {
 	// remove md file generated to relative path
 	defer func() {
 		files, err := filepath.Glob("./*.md")
@@ -190,7 +190,7 @@ func Test_run_relative_path(t *testing.T) {
 	}
 }
 
-func Test_run_failure_case(t *testing.T) {
+func Test_run_convert2md_failure_case(t *testing.T) {
 	// generated
 	type args struct {
 		envVars         []string
@@ -268,6 +268,92 @@ func Test_run_failure_case(t *testing.T) {
 				genGitHubClient: di2m.NewMockGitHubClient,
 			},
 			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := run(tt.args.envVars, tt.args.cmdArgs, tt.args.genGitHubClient); (err != nil) != tt.wantErr {
+				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_run_check_dups(t *testing.T) {
+	type args struct {
+		envVars         []string
+		cmdArgs         []string
+		genGitHubClient func(c config.Config) di2m.GitHubClient
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			"When cmd args given, it should be successful when a markdown with same issue url but same title exists",
+			args{
+				cmdArgs: []string{
+					"issue2md",
+					"-",
+					"https://github.com/Codertocat/Hello-World/issues/1",
+					"-github-token",
+					"test_token",
+					"-export-dir",
+					expDirAbsPath,
+				},
+				genGitHubClient: di2m.NewMockGitHubClient,
+			},
+			false,
+		},
+		{
+			"When same issue url with different title is trying to be exported, it should fail",
+			args{
+				cmdArgs: []string{
+					"issue2md",
+					"-issue-url",
+					"https://github.com/Codertocat/Hello-World/issues/1",
+					"-github-token",
+					"test_token",
+					"-export-dir",
+					expDirAbsPath,
+				},
+				genGitHubClient: di2m.NewMockFailGitHubClient,
+			},
+			true,
+		},
+		{
+			`When both env vars and cmd args given, it should be successful and cmd args overwrite env vars values.
+				Export will succeed when exporting an issue that is not exists`,
+			args{
+				envVars: []string{
+					"ISSUE2MD_GITHUB_ISSUE_URL=overwritten",
+					"ISSUE2MD_GITHUB_TOKEN=overwritten",
+					"ISSUE2MD_EXPORT_DIR=./",
+				},
+				cmdArgs: []string{
+					"issue2md",
+					"-issue-url",
+					"https://github.com/Codertocat/Hello-World/issues/2",
+					"-github-token",
+					"test_token",
+					"-export-dir",
+					expDirAbsPath,
+				},
+				genGitHubClient: di2m.NewMockGitHubClient,
+			},
+			false,
+		},
+		{
+			"When help flag given, show help and exit without error",
+			args{
+				cmdArgs: []string{
+					"issue2md",
+					"-help",
+				},
+				genGitHubClient: di2m.NewMockGitHubClient,
+			},
+			false,
 		},
 	}
 	for _, tt := range tests {

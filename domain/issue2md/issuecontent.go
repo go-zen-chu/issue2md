@@ -1,6 +1,7 @@
 package issue2md
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"regexp"
@@ -40,6 +41,9 @@ func LoadFrontMatterFromMarkdownFile(filePath string) (*YAMLFrontMatter, error) 
 	}
 	matches := markdownRegex.FindSubmatch(bt)
 	if matches == nil {
+		if bytes.Contains(bt, []byte("\r\n")) {
+			return nil, fmt.Errorf("detected CRLF(\\r\\n) in file %s, to avoid managing file in LF(\\n) in git repository, convert to \\n", filePath)
+		}
 		return nil, fmt.Errorf("could not find front matter in file: %s", filePath)
 	}
 	var yfm YAMLFrontMatter
