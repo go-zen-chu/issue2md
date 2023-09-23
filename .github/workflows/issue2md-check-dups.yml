@@ -8,7 +8,7 @@ jobs:
     name: Check same issueURL markdown exists in export-dir
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Check and list duplicated issue markdowns
         uses: go-zen-chu/issue2md@main
         with:
