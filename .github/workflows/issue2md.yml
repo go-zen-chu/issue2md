@@ -12,7 +12,7 @@ jobs:
       github.event.issue.state_reason == 'completed' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Convert issue to markdown
         uses: go-zen-chu/issue2md@main
         with:
