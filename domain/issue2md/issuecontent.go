@@ -66,27 +66,6 @@ func NewIssueContent(url, title string, labels []string, contents []string) *Iss
 	}
 }
 
-func LoadFromMarkdownFile(filePath string) (*IssueContent, error) {
-	bt, err := os.ReadFile(filePath)
-	if err != nil {
-		return nil, fmt.Errorf("read file: %w", err)
-	}
-	matches := markdownRegex.FindSubmatch(bt)
-	if matches != nil {
-		return nil, fmt.Errorf("could not find front matter in file: %s", filePath)
-	}
-	var yfm *YAMLFrontMatter
-	if err := yaml.Unmarshal(matches[1], yfm); err != nil {
-		return nil, fmt.Errorf("unmarshal yaml: %s\n%s", filePath, matches[1])
-	}
-	return &IssueContent{
-		frontMatter: yfm,
-		content: &Content{
-			contents: strings.Split(string(matches[2]), "\n"),
-		},
-	}, nil
-}
-
 func (ic *IssueContent) GetMDFilename() string {
 	return ic.frontMatter.Title + ".md"
 }
