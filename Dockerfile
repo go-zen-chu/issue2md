@@ -1,4 +1,4 @@
-FROM golang:1.20.5-buster AS gobuilder
+FROM golang:latest AS gobuilder
 
 # use static link build
 ENV CGO_ENABLED=0
