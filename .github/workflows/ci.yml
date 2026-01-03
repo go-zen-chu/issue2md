@@ -1,19 +1,17 @@
 name: ci
-on: [push]
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
-          cache: true
-      - name: Install dependent packages
-        run: go mod download
-      - name: Test Build
-        run: go build -v ./...
-      - name: Test
-        run: go test -v ./...
+  go-ci:
+    uses: go-zen-chu/.github/.github/workflows/go-ci.yaml@main
+    with:
+      go-version-file: go.mod
+      working-directory: .
