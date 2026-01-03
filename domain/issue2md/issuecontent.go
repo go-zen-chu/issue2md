@@ -1,6 +1,7 @@
 package issue2md
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"regexp"
@@ -32,6 +33,17 @@ type Content struct {
 	contents []string
 }
 
+func firstNLines(bt []byte, n int) string {
+	if n <= 0 || len(bt) == 0 {
+		return ""
+	}
+	parts := bytes.SplitN(bt, []byte("\n"), n+1)
+	if len(parts) > n {
+		parts = parts[:n]
+	}
+	return string(bytes.Join(parts, []byte("\n")))
+}
+
 // Load only YAML front matter for memory efficiency
 func LoadFrontMatterFromMarkdownFile(filePath string) (*YAMLFrontMatter, error) {
 	bt, err := os.ReadFile(filePath)
@@ -40,7 +52,7 @@ func LoadFrontMatterFromMarkdownFile(filePath string) (*YAMLFrontMatter, error) 
 	}
 	matches := markdownRegex.FindSubmatch(bt)
 	if matches == nil {
-		return nil, fmt.Errorf("could not find front matter in file: %s", filePath)
+		return nil, fmt.Errorf("could not find front matter in file: %s\nfirst 10 lines:\n%s", filePath, firstNLines(bt, 10))
 	}
 	var yfm YAMLFrontMatter
 	if err := yaml.Unmarshal(matches[1], &yfm); err != nil {
