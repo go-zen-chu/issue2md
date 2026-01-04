@@ -1,10 +1,10 @@
 package issue2md
 
 import (
-	"bytes"
+	"bufio"
 	"fmt"
+	"io"
 	"os"
-	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	markdownRegex = regexp.MustCompile(`(?ms)^---\n(.+?)\n---\n(.*)$`)
+	utf8BOMString = "\ufeff"
 )
 
 type IssueContent struct {
@@ -33,30 +33,62 @@ type Content struct {
 	contents []string
 }
 
-func firstNLines(bt []byte, n int) string {
-	if n <= 0 || len(bt) == 0 {
-		return ""
+func extractYAMLFrontMatterFromReader(r io.Reader) ([]byte, bool, error) {
+	scanner := bufio.NewScanner(r)
+	// Default token limit (64K) can be too small for unusual YAML lines.
+	// We only scan until the closing '---', but be defensive.
+	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+
+	foundStart := false
+	var yamlLines []string
+	for scanner.Scan() {
+		line := strings.TrimSuffix(scanner.Text(), "\r")
+		if !foundStart {
+			line = strings.TrimPrefix(line, utf8BOMString)
+			trimmed := strings.TrimSpace(line)
+			if trimmed == "" {
+				continue
+			}
+			if trimmed != frontMatterSep {
+				// No front matter in the beginning
+				return nil, false, nil
+			}
+			foundStart = true
+			continue
+		}
+
+		if strings.TrimSpace(line) == frontMatterSep {
+			return []byte(strings.Join(yamlLines, "\n")), true, nil
+		}
+		yamlLines = append(yamlLines, line)
 	}
-	parts := bytes.SplitN(bt, []byte("\n"), n+1)
-	if len(parts) > n {
-		parts = parts[:n]
+	if err := scanner.Err(); err != nil {
+		return nil, false, fmt.Errorf("scan file for front matter extraction: %w", err)
 	}
-	return string(bytes.Join(parts, []byte("\n")))
+	return nil, false, nil
 }
 
 // Load only YAML front matter for memory efficiency
 func LoadFrontMatterFromMarkdownFile(filePath string) (*YAMLFrontMatter, error) {
-	bt, err := os.ReadFile(filePath)
+	f, err := os.Open(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("read file: %w", err)
+		return nil, fmt.Errorf("open file: %w", err)
 	}
-	matches := markdownRegex.FindSubmatch(bt)
-	if matches == nil {
-		return nil, fmt.Errorf("could not find front matter in file: %s\nfirst 10 lines:\n%s", filePath, firstNLines(bt, 10))
+	defer func() { _ = f.Close() }()
+
+	yamlBytes, ok, err := extractYAMLFrontMatterFromReader(f)
+	if err != nil {
+		return nil, fmt.Errorf("extract front matter: %w", err)
+	}
+	if !ok {
+		if len(yamlBytes) == 0 {
+			return nil, fmt.Errorf("could not find front matter in file: %s", filePath)
+		}
+		return nil, fmt.Errorf("could not find closing front matter separator in file: %s\nfront matter:\n%s", filePath, string(yamlBytes))
 	}
 	var yfm YAMLFrontMatter
-	if err := yaml.Unmarshal(matches[1], &yfm); err != nil {
-		return nil, fmt.Errorf("unmarshal yaml: %s\n%s", filePath, matches[1])
+	if err := yaml.Unmarshal(yamlBytes, &yfm); err != nil {
+		return nil, fmt.Errorf("unmarshal yaml: %s: %w\n%s", filePath, err, string(yamlBytes))
 	}
 	return &yfm, nil
 }

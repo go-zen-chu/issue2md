@@ -1,7 +1,10 @@
 package issue2md
 
 import (
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -32,6 +35,87 @@ func TestNewIssueContent(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewIssueContent(tt.args.url, tt.args.title, tt.args.labels, tt.args.contents); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewIssueContent() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLoadFrontMatterFromMarkdownFile_LineEndings(t *testing.T) {
+	t.Parallel()
+
+	const (
+		title  = "Reading book"
+		url    = "https://github.com/test-org/test-repo/issues/11"
+		labels = "[book]"
+	)
+
+	buildMarkdown := func(eol string, leadingBlankLine bool, sepWhitespace bool) string {
+		openSep := frontMatterSep
+		closeSep := frontMatterSep
+		if sepWhitespace {
+			openSep = "  " + frontMatterSep + "  "
+			closeSep = frontMatterSep + "   "
+		}
+
+		yamlLines := []string{
+			"title: \"" + title + "\"",
+			"url: " + url,
+			"labels: " + labels,
+		}
+		bodyLines := []string{
+			"",
+			"## Expected output",
+			"- Something concrete",
+		}
+
+		var sb strings.Builder
+		if leadingBlankLine {
+			sb.WriteString(eol)
+		}
+		sb.WriteString(openSep + eol)
+		sb.WriteString(strings.Join(yamlLines, eol) + eol)
+		sb.WriteString(closeSep + eol)
+		sb.WriteString(strings.Join(bodyLines, eol) + eol)
+		return sb.String()
+	}
+
+	lf := buildMarkdown("\n", false, false)
+	leadingBlankLF := buildMarkdown("\n", true, false)
+	sepWithSpacesLF := buildMarkdown("\n", false, true)
+
+	crlf := buildMarkdown("\r\n", false, false)
+	bomCRLF := string([]byte{0xEF, 0xBB, 0xBF}) + crlf
+
+	tests := []struct {
+		name    string
+		content string
+	}{
+		{name: "LF", content: lf},
+		{name: "LeadingBlankLine+LF", content: leadingBlankLF},
+		{name: "CRLF", content: crlf},
+		{name: "UTF8BOM+CRLF", content: bomCRLF},
+		{name: "SepWhitespace+LF", content: sepWithSpacesLF},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			p := filepath.Join(dir, "test.md")
+			if err := os.WriteFile(p, []byte(tt.content), 0o644); err != nil {
+				t.Fatalf("write test file: %v", err)
+			}
+			yfm, err := LoadFrontMatterFromMarkdownFile(p)
+			if err != nil {
+				t.Fatalf("LoadFrontMatterFromMarkdownFile() error = %v", err)
+			}
+			if yfm.Title != title {
+				t.Fatalf("Title = %q, want %q", yfm.Title, title)
+			}
+			if yfm.URL != url {
+				t.Fatalf("URL = %q, want %q", yfm.URL, url)
+			}
+			if !reflect.DeepEqual(yfm.Labels, []string{"book"}) {
+				t.Fatalf("Labels = %#v, want %#v", yfm.Labels, []string{"book"})
 			}
 		})
 	}
