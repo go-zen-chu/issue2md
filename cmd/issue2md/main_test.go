@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	di2m "github.com/go-zen-chu/issue2md/domain/issue2md"
 	"github.com/go-zen-chu/issue2md/internal/config"
+	ui2m "github.com/go-zen-chu/issue2md/usecase/issue2md"
 )
 
 func Test_run(t *testing.T) {
@@ -27,7 +27,7 @@ func Test_run(t *testing.T) {
 	type args struct {
 		envVars         []string
 		cmdArgs         []string
-		genGitHubClient func(c config.Config) di2m.GitHubClient
+		genGitHubClient func(c config.Config) ui2m.GitHubClient
 	}
 	tests := []struct {
 		name    string
@@ -42,7 +42,7 @@ func Test_run(t *testing.T) {
 					"ISSUE2MD_GITHUB_TOKEN=test_token",
 					"ISSUE2MD_EXPORT_DIR=" + expDirAbsPath,
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -58,7 +58,7 @@ func Test_run(t *testing.T) {
 					"-export-dir",
 					expDirAbsPath,
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -74,7 +74,7 @@ func Test_run(t *testing.T) {
 					"-export-dir",
 					expDirAbsPath,
 				},
-				genGitHubClient: di2m.NewMockFailGitHubClient,
+				genGitHubClient: ui2m.NewMockFailGitHubClient,
 			},
 			true,
 		},
@@ -96,7 +96,7 @@ func Test_run(t *testing.T) {
 					"-export-dir",
 					expDirAbsPath,
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -107,7 +107,7 @@ func Test_run(t *testing.T) {
 					"issue2md",
 					"-help",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -138,7 +138,7 @@ func Test_run_relative_path(t *testing.T) {
 	type args struct {
 		envVars         []string
 		cmdArgs         []string
-		genGitHubClient func(c config.Config) di2m.GitHubClient
+		genGitHubClient func(c config.Config) ui2m.GitHubClient
 	}
 	tests := []struct {
 		name    string
@@ -160,7 +160,7 @@ func Test_run_relative_path(t *testing.T) {
 					"-github-token",
 					"test_token",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -176,7 +176,7 @@ func Test_run_relative_path(t *testing.T) {
 					"-export-dir",
 					"./",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -195,7 +195,7 @@ func Test_run_failure_case(t *testing.T) {
 	type args struct {
 		envVars         []string
 		cmdArgs         []string
-		genGitHubClient func(c config.Config) di2m.GitHubClient
+		genGitHubClient func(c config.Config) ui2m.GitHubClient
 	}
 	tests := []struct {
 		name    string
@@ -210,7 +210,7 @@ func Test_run_failure_case(t *testing.T) {
 					"ISSUE2MD_GITHUB_TOKEN=test_token",
 					"ISSUE2MD_THIS_IS_INVALID=hehehe",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			true,
 		},
@@ -226,7 +226,7 @@ func Test_run_failure_case(t *testing.T) {
 					"-export-dir",
 					"./../root/",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			true,
 		},
@@ -242,7 +242,7 @@ func Test_run_failure_case(t *testing.T) {
 					"-export-dir",
 					"/no_such_root_path/in_your_computer",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			true,
 		},
@@ -254,7 +254,7 @@ func Test_run_failure_case(t *testing.T) {
 					"-no-such-flag",
 					"https://github.com/Codertocat/Hello-World/issues/1",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			true,
 		},
@@ -265,7 +265,7 @@ func Test_run_failure_case(t *testing.T) {
 					"issue2md",
 					"-debug",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			true,
 		},

@@ -6,9 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	di2m "github.com/go-zen-chu/issue2md/domain/issue2md"
-	"github.com/go-zen-chu/issue2md/infra/github"
 )
 
 type Issue2mdUseCase interface {
@@ -17,11 +14,11 @@ type Issue2mdUseCase interface {
 }
 
 type issue2mdUsecase struct {
-	ghClient github.GitHubClient
-	expDir string
+	ghClient GitHubClient
+	expDir   string
 }
 
-func NewIssue2mdUseCase(ghClient github.GitHubClient, expDir string) Issue2mdUseCase {
+func NewIssue2mdUseCase(ghClient GitHubClient, expDir string) Issue2mdUseCase {
 	return &issue2mdUsecase{
 		ghClient: ghClient,
 		expDir:   expDir,
@@ -30,14 +27,14 @@ func NewIssue2mdUseCase(ghClient github.GitHubClient, expDir string) Issue2mdUse
 
 // Usecase for converting github issue to markdown
 func (imu *issue2mdUsecase) Convert2md(issueURL string) error {
-	ic, err := i2m.ghClient.GetIssueContent(issueURL)
+	ic, err := imu.ghClient.GetIssueContent(issueURL)
 	if err != nil {
 		return fmt.Errorf("get issue content: %w", err)
 	}
 	// return error when duplicate file already exists
-	files, err := os.ReadDir(i2m.expDir)
+	files, err := os.ReadDir(imu.expDir)
 	if err != nil {
-		return fmt.Errorf("read dir %s: %w", i2m.expDir, err)
+		return fmt.Errorf("read dir %s: %w", imu.expDir, err)
 	}
 	for _, file := range files {
 		fi, err := file.Info()
@@ -50,7 +47,7 @@ func (imu *issue2mdUsecase) Convert2md(issueURL string) error {
 		if !strings.HasSuffix(fi.Name(), ".md") {
 			continue
 		}
-		absPath := filepath.Join(i2m.expDir, fi.Name())
+		absPath := filepath.Join(imu.expDir, fi.Name())
 		yfm, err := LoadFrontMatterFromMarkdownFile(absPath)
 		if err != nil {
 			return fmt.Errorf("could not load file %s: %w", absPath, err)
@@ -63,10 +60,11 @@ func (imu *issue2mdUsecase) Convert2md(issueURL string) error {
 	if err != nil {
 		return fmt.Errorf("generate content: %w", err)
 	}
-	if err := os.WriteFile(filepath.Join(i2m.expDir, ic.GetMDFilename()), []byte(mdStr), 0755); err != nil {
+	if err := os.WriteFile(filepath.Join(imu.expDir, ic.GetMDFilename()), []byte(mdStr), 0o644); err != nil {
 		return fmt.Errorf("write file: %w", err)
 	}
 	return nil
+}
 
 type fileMeta struct {
 	finfo       fs.FileInfo

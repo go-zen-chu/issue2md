@@ -11,32 +11,40 @@ import (
 )
 
 func main() {
-	if err := run(os.Environ(), os.Args); err != nil {
-		panic(fmt.Sprintf("run(): %s", err))
+	var cfg config.Config
+	var err error
+	if cfg, err = setup(os.Environ(), os.Args); err != nil {
+		panic(fmt.Sprintf("setup: %s", err))
+	}
+	if err := run(cfg, github.NewGitHubClient(github.Token(cfg.GetGitHubToken()))); err != nil {
+		panic(fmt.Sprintf("run: %s", err))
 	}
 }
 
-func run(envVars []string, cmdArgs []string) error {
+func setup(envVars []string, cmdArgs []string) (config.Config, error) {
 	cfg := config.NewConfig()
 	if err := cfg.LoadFromEnvVars(envVars); err != nil {
-		return fmt.Errorf("load env var: %w", err)
+		return nil, fmt.Errorf("load env var: %w", err)
 	}
 	if err := cfg.LoadFromCommandArgs(cmdArgs); err != nil {
-		return fmt.Errorf("load args: %w", err)
+		return nil, fmt.Errorf("load args: %w", err)
 	}
 	if help, helpMsg := cfg.ShowHelp(); help {
 		fmt.Println(helpMsg)
-		return nil
+		return nil, nil
 	}
+
 	// initialize logger
 	if err := log.Init(cfg.IsDebugMode()); err != nil {
-		return fmt.Errorf("init logger: %w", err)
+		return nil, fmt.Errorf("init logger: %w", err)
 	}
 	defer log.Close()
 	log.Debugf("config: %+v", cfg)
 
-	githubClient := github.NewGitHubClient(github.Token(cfg.GetGitHubToken()))
+	return cfg, nil
+}
 
+func run(cfg config.Config, githubClient ui2m.GitHubClient) error {
 	i2muc := ui2m.NewIssue2mdUseCase(githubClient, cfg.GetExportDir())
 	if cfg.GetCheckDups() {
 		res, err := i2muc.CheckDuplicateIssueFile()
@@ -48,7 +56,7 @@ func run(envVars []string, cmdArgs []string) error {
 			fmt.Printf("error: %s", err)
 		}
 	} else {
-		if err := i2muc.Convert2md(c.GetGitHubIssueURL()); err != nil {
+		if err := i2muc.Convert2md(cfg.GetGitHubIssueURL()); err != nil {
 			return fmt.Errorf("convert to markdown: %w", err)
 		}
 		log.Infof("Export issue %s to %s, succeeded\n", cfg.GetGitHubIssueURL(), cfg.GetExportDir())
