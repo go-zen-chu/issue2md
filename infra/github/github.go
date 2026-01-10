@@ -13,6 +13,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type GitHubClient interface {
+	GetIssueContent(issueURL string) (*dis.IssueContent, error)
+}
+
 type ghClient struct {
 	ctx    context.Context
 	option *Option
