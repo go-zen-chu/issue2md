@@ -114,7 +114,22 @@ func Test_run(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := run(tt.args.envVars, tt.args.cmdArgs, tt.args.genGitHubClient); (err != nil) != tt.wantErr {
+			cfg, err := setup(tt.args.envVars, tt.args.cmdArgs)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("setup() error = %v, wantErr %v", err, tt.wantErr)
+				}
+				return
+			}
+			if cfg == nil {
+				// help message was shown
+				if tt.wantErr {
+					t.Errorf("setup() returned nil config, wantErr %v", tt.wantErr)
+				}
+				return
+			}
+			ghClient := tt.args.genGitHubClient(cfg)
+			if err := run(cfg, ghClient); (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -183,7 +198,22 @@ func Test_run_relative_path(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := run(tt.args.envVars, tt.args.cmdArgs, tt.args.genGitHubClient); (err != nil) != tt.wantErr {
+			cfg, err := setup(tt.args.envVars, tt.args.cmdArgs)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("setup() error = %v, wantErr %v", err, tt.wantErr)
+				}
+				return
+			}
+			if cfg == nil {
+				// help message was shown
+				if tt.wantErr {
+					t.Errorf("setup() returned nil config, wantErr %v", tt.wantErr)
+				}
+				return
+			}
+			ghClient := tt.args.genGitHubClient(cfg)
+			if err := run(cfg, ghClient); (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -272,7 +302,22 @@ func Test_run_failure_case(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := run(tt.args.envVars, tt.args.cmdArgs, tt.args.genGitHubClient); (err != nil) != tt.wantErr {
+			cfg, err := setup(tt.args.envVars, tt.args.cmdArgs)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("setup() error = %v, wantErr %v", err, tt.wantErr)
+				}
+				return
+			}
+			if cfg == nil {
+				// help message was shown
+				if tt.wantErr {
+					t.Errorf("setup() returned nil config, wantErr %v", tt.wantErr)
+				}
+				return
+			}
+			ghClient := tt.args.genGitHubClient(cfg)
+			if err := run(cfg, ghClient); (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

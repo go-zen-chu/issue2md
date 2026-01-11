@@ -16,6 +16,10 @@ func main() {
 	if cfg, err = setup(os.Environ(), os.Args); err != nil {
 		panic(fmt.Sprintf("setup: %s", err))
 	}
+	if cfg == nil {
+		// help message was shown
+		return
+	}
 	if err := run(cfg, github.NewGitHubClient(github.Token(cfg.GetGitHubToken()))); err != nil {
 		panic(fmt.Sprintf("run: %s", err))
 	}

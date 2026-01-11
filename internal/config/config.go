@@ -94,6 +94,15 @@ func (c *config) LoadFromCommandArgs(args []string) error {
 			errg = errors.Join(errg, fmt.Errorf("handling flag %s: unknown flag", f.Name))
 		}
 	})
+	// Apply default export-dir even when flag wasn't explicitly provided.
+	if c.exportDirPath == nil {
+		edp, err := newExportDirPath(*edVal)
+		if err != nil {
+			errg = errors.Join(errg, fmt.Errorf("handling flag export-dir: %w", err))
+		} else {
+			c.exportDirPath = edp
+		}
+	}
 	return errg
 }
 
@@ -146,6 +155,14 @@ func (c *config) LoadFromEnvVars(envVars []string) error {
 	}
 	if err != nil {
 		return err
+	}
+	// Apply default export-dir when env var wasn't provided.
+	if c.exportDirPath == nil {
+		edp, derr := newExportDirPath("./")
+		if derr != nil {
+			return derr
+		}
+		c.exportDirPath = edp
 	}
 	return nil
 }
