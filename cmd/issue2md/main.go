@@ -4,53 +4,65 @@ import (
 	"fmt"
 	"os"
 
-	di2m "github.com/go-zen-chu/issue2md/domain/issue2md"
+	"github.com/go-zen-chu/issue2md/infra/github"
 	"github.com/go-zen-chu/issue2md/internal/config"
-	"github.com/go-zen-chu/issue2md/internal/di"
 	"github.com/go-zen-chu/issue2md/internal/log"
-	"github.com/go-zen-chu/issue2md/internal/runner"
 	ui2m "github.com/go-zen-chu/issue2md/usecase/issue2md"
 )
 
-func run(
-	envVars []string,
-	cmdArgs []string,
-	genGitHubClient func(c config.Config) di2m.GitHubClient) error {
-	r := runner.NewRunner("issue2md")
-	if err := r.LoadConfigFromEnvVars(envVars); err != nil {
-		return fmt.Errorf("load env var: %w", err)
+func main() {
+	var cfg config.Config
+	var err error
+	if cfg, err = setup(os.Environ(), os.Args); err != nil {
+		panic(fmt.Sprintf("setup: %s", err))
 	}
-	if err := r.LoadConfigFromCommandArgs(cmdArgs); err != nil {
-		return fmt.Errorf("load args: %w", err)
+	if cfg == nil {
+		// help message was shown
+		return
 	}
-	if err := r.Run(func(c config.Config) error {
-		ghClient := genGitHubClient(c)
-		i2muc := ui2m.NewIssue2mdUseCase(ghClient, c.GetExportDir())
-		if c.GetCheckDups() {
-			res, err := i2muc.CheckDuplicateIssueFile()
-			if len(res) == 0 {
-				res = "No duplicate issueURL markdown files :tada:"
-			}
-			fmt.Printf("[CheckDuplicateIssueURLFile] %s\n", res)
-			if err != nil {
-				fmt.Printf("error: %s", err)
-			}
-		} else {
-			if err := i2muc.Convert2md(c.GetGitHubIssueURL()); err != nil {
-				return fmt.Errorf("convert to markdown: %w", err)
-			}
-			log.Infof("Export issue %s to %s, succeeded\n", c.GetGitHubIssueURL(), c.GetExportDir())
-		}
-		return nil
-	}); err != nil {
-		return fmt.Errorf("while running: %w", err)
+	if err := run(cfg, github.NewGitHubClient(github.Token(cfg.GetGitHubToken()))); err != nil {
+		panic(fmt.Sprintf("run: %s", err))
 	}
-	return nil
 }
 
-func main() {
-	di := di.NewDIContainer()
-	if err := run(os.Environ(), os.Args, di.GitHubClient); err != nil {
-		panic(fmt.Sprintf("run(): %s", err))
+func setup(envVars []string, cmdArgs []string) (config.Config, error) {
+	cfg := config.NewConfig()
+	if err := cfg.LoadFromEnvVars(envVars); err != nil {
+		return nil, fmt.Errorf("load env var: %w", err)
 	}
+	if err := cfg.LoadFromCommandArgs(cmdArgs); err != nil {
+		return nil, fmt.Errorf("load args: %w", err)
+	}
+	if help, helpMsg := cfg.ShowHelp(); help {
+		fmt.Println(helpMsg)
+		return nil, nil
+	}
+	// initialize logger
+	if err := log.Init(cfg.IsDebugMode()); err != nil {
+		return nil, fmt.Errorf("init logger: %w", err)
+	}
+	defer log.Close()
+	log.Debugf("config: %+v", cfg)
+
+	return cfg, nil
+}
+
+func run(cfg config.Config, githubClient ui2m.GitHubClient) error {
+	i2muc := ui2m.NewIssue2mdUseCase(githubClient, cfg.GetExportDir())
+	if cfg.GetCheckDups() {
+		res, err := i2muc.CheckDuplicateIssueFile()
+		if len(res) == 0 {
+			res = "No duplicate issueURL markdown files :tada:"
+		}
+		fmt.Printf("[CheckDuplicateIssueURLFile] %s\n", res)
+		if err != nil {
+			fmt.Printf("error: %s", err)
+		}
+	} else {
+		if err := i2muc.Convert2md(cfg.GetGitHubIssueURL()); err != nil {
+			return fmt.Errorf("convert to markdown: %w", err)
+		}
+		log.Infof("Export issue %s to %s, succeeded\n", cfg.GetGitHubIssueURL(), cfg.GetExportDir())
+	}
+	return nil
 }

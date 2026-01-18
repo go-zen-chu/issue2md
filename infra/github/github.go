@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"path"
 	"strconv"
 	"strings"
 
-	dis "github.com/go-zen-chu/issue2md/domain/issue2md"
+	ui2m "github.com/go-zen-chu/issue2md/usecase/issue2md"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
@@ -19,7 +18,7 @@ type ghClient struct {
 	cli    *github.Client
 }
 
-func NewGitHubClient(setters ...OptionSetter) dis.GitHubClient {
+func NewGitHubClient(setters ...OptionSetter) ui2m.GitHubClient {
 	o := &Option{
 		baseURL: "https://github.com",
 		token:   "",
@@ -40,12 +39,12 @@ func NewGitHubClient(setters ...OptionSetter) dis.GitHubClient {
 	}
 }
 
-func (ghc *ghClient) GetIssueContent(issueURL string) (*dis.IssueContent, error) {
+func (ghc *ghClient) GetIssueContent(issueURL string) (*ui2m.IssueContent, error) {
 	u, err := url.Parse(issueURL)
 	if err != nil {
 		return nil, fmt.Errorf("parse issueURL: %w", err)
 	}
-	if !strings.HasPrefix(issueURL, path.Join()) {
+	if !strings.HasPrefix(issueURL, ghc.option.baseURL) {
 		return nil, fmt.Errorf("invalid url, baseURL: %s, given URL: %s", ghc.option.baseURL, issueURL)
 	}
 	// e.g. /Codertocat/Hello-World/issues/12
@@ -77,6 +76,6 @@ func (ghc *ghClient) GetIssueContent(issueURL string) (*dis.IssueContent, error)
 	for idx, c := range cs {
 		comments[idx+1] = *c.Body
 	}
-	ic := dis.NewIssueContent(issueURL, i.GetTitle(), labels, comments)
+	ic := ui2m.NewIssueContent(issueURL, i.GetTitle(), labels, comments)
 	return ic, nil
 }

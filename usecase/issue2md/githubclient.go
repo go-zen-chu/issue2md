@@ -1,6 +1,7 @@
 package issue2md
 
-// GitHubClient is domain repository interface for r/w data with GitHub
+//go:generate mockgen -source=$GOFILE -destination=mock_$GOFILE -package=$GOPACKAGE
+
 type GitHubClient interface {
 	GetIssueContent(issueURL string) (*IssueContent, error)
 }

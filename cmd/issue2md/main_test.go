@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	di2m "github.com/go-zen-chu/issue2md/domain/issue2md"
 	"github.com/go-zen-chu/issue2md/internal/config"
+	ui2m "github.com/go-zen-chu/issue2md/usecase/issue2md"
 )
 
 func Test_run(t *testing.T) {
@@ -27,7 +27,7 @@ func Test_run(t *testing.T) {
 	type args struct {
 		envVars         []string
 		cmdArgs         []string
-		genGitHubClient func(c config.Config) di2m.GitHubClient
+		genGitHubClient func(c config.Config) ui2m.GitHubClient
 	}
 	tests := []struct {
 		name    string
@@ -39,10 +39,10 @@ func Test_run(t *testing.T) {
 			args{
 				envVars: []string{
 					"ISSUE2MD_GITHUB_ISSUE_URL=https://github.com/Codertocat/Hello-World/issues/1",
-					"ISSUE2MD_GITHUB_TOKEN=test_token",
+					"GITHUB_TOKEN=test_token",
 					"ISSUE2MD_EXPORT_DIR=" + expDirAbsPath,
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -58,7 +58,7 @@ func Test_run(t *testing.T) {
 					"-export-dir",
 					expDirAbsPath,
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -74,7 +74,7 @@ func Test_run(t *testing.T) {
 					"-export-dir",
 					expDirAbsPath,
 				},
-				genGitHubClient: di2m.NewMockFailGitHubClient,
+				genGitHubClient: ui2m.NewMockFailGitHubClient,
 			},
 			true,
 		},
@@ -84,7 +84,7 @@ func Test_run(t *testing.T) {
 			args{
 				envVars: []string{
 					"ISSUE2MD_GITHUB_ISSUE_URL=overwritten",
-					"ISSUE2MD_GITHUB_TOKEN=overwritten",
+					"GITHUB_TOKEN=overwritten",
 					"ISSUE2MD_EXPORT_DIR=./",
 				},
 				cmdArgs: []string{
@@ -96,7 +96,7 @@ func Test_run(t *testing.T) {
 					"-export-dir",
 					expDirAbsPath,
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -107,14 +107,29 @@ func Test_run(t *testing.T) {
 					"issue2md",
 					"-help",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := run(tt.args.envVars, tt.args.cmdArgs, tt.args.genGitHubClient); (err != nil) != tt.wantErr {
+			cfg, err := setup(tt.args.envVars, tt.args.cmdArgs)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("setup() error = %v, wantErr %v", err, tt.wantErr)
+				}
+				return
+			}
+			if cfg == nil {
+				// help message was shown
+				if tt.wantErr {
+					t.Errorf("setup() returned nil config, wantErr %v", tt.wantErr)
+				}
+				return
+			}
+			ghClient := tt.args.genGitHubClient(cfg)
+			if err := run(cfg, ghClient); (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -138,7 +153,7 @@ func Test_run_relative_path(t *testing.T) {
 	type args struct {
 		envVars         []string
 		cmdArgs         []string
-		genGitHubClient func(c config.Config) di2m.GitHubClient
+		genGitHubClient func(c config.Config) ui2m.GitHubClient
 	}
 	tests := []struct {
 		name    string
@@ -150,7 +165,7 @@ func Test_run_relative_path(t *testing.T) {
 			args{
 				envVars: []string{
 					"ISSUE2MD_GITHUB_ISSUE_URL=overwritten",
-					"ISSUE2MD_GITHUB_TOKEN=overwritten",
+					"GITHUB_TOKEN=overwritten",
 					"ISSUE2MD_EXPORT_DIR=./",
 				},
 				cmdArgs: []string{
@@ -160,7 +175,7 @@ func Test_run_relative_path(t *testing.T) {
 					"-github-token",
 					"test_token",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
@@ -176,14 +191,29 @@ func Test_run_relative_path(t *testing.T) {
 					"-export-dir",
 					"./",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := run(tt.args.envVars, tt.args.cmdArgs, tt.args.genGitHubClient); (err != nil) != tt.wantErr {
+			cfg, err := setup(tt.args.envVars, tt.args.cmdArgs)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("setup() error = %v, wantErr %v", err, tt.wantErr)
+				}
+				return
+			}
+			if cfg == nil {
+				// help message was shown
+				if tt.wantErr {
+					t.Errorf("setup() returned nil config, wantErr %v", tt.wantErr)
+				}
+				return
+			}
+			ghClient := tt.args.genGitHubClient(cfg)
+			if err := run(cfg, ghClient); (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -195,7 +225,7 @@ func Test_run_failure_case(t *testing.T) {
 	type args struct {
 		envVars         []string
 		cmdArgs         []string
-		genGitHubClient func(c config.Config) di2m.GitHubClient
+		genGitHubClient func(c config.Config) ui2m.GitHubClient
 	}
 	tests := []struct {
 		name    string
@@ -203,16 +233,16 @@ func Test_run_failure_case(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"When invalid env vars given, it should fail",
+			"When invalid env vars given, it should ignore",
 			args{
 				envVars: []string{
 					"ISSUE2MD_GITHUB_ISSUE_URL=https://github.com/Codertocat/Hello-World/issues/1",
-					"ISSUE2MD_GITHUB_TOKEN=test_token",
+					"GITHUB_TOKEN=test_token",
 					"ISSUE2MD_THIS_IS_INVALID=hehehe",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
-			true,
+			false,
 		},
 		{
 			"When a directory traversed path given, it should reject",
@@ -226,7 +256,7 @@ func Test_run_failure_case(t *testing.T) {
 					"-export-dir",
 					"./../root/",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			true,
 		},
@@ -242,7 +272,7 @@ func Test_run_failure_case(t *testing.T) {
 					"-export-dir",
 					"/no_such_root_path/in_your_computer",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			true,
 		},
@@ -254,7 +284,7 @@ func Test_run_failure_case(t *testing.T) {
 					"-no-such-flag",
 					"https://github.com/Codertocat/Hello-World/issues/1",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			true,
 		},
@@ -265,14 +295,29 @@ func Test_run_failure_case(t *testing.T) {
 					"issue2md",
 					"-debug",
 				},
-				genGitHubClient: di2m.NewMockGitHubClient,
+				genGitHubClient: ui2m.NewMockGitHubClient,
 			},
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := run(tt.args.envVars, tt.args.cmdArgs, tt.args.genGitHubClient); (err != nil) != tt.wantErr {
+			cfg, err := setup(tt.args.envVars, tt.args.cmdArgs)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("setup() error = %v, wantErr %v", err, tt.wantErr)
+				}
+				return
+			}
+			if cfg == nil {
+				// help message was shown
+				if tt.wantErr {
+					t.Errorf("setup() returned nil config, wantErr %v", tt.wantErr)
+				}
+				return
+			}
+			ghClient := tt.args.genGitHubClient(cfg)
+			if err := run(cfg, ghClient); (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

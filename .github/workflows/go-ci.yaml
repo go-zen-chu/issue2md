@@ -1,4 +1,4 @@
-name: ci
+name: Go general check (go fmt, vet, build, test)
 
 on:
   push:
