@@ -9,7 +9,10 @@ WORKDIR /usr/local/src/repo
 COPY . /usr/local/src/repo
 RUN go build ./cmd/issue2md
 
-FROM gcr.io/distroless/static-debian11:latest
+FROM alpine:latest
+
+# Install git for auto-commit and auto-push functionality
+RUN apk add --no-cache git
 
 COPY --from=gobuilder /usr/local/src/repo/issue2md /bin/issue2md
 ENTRYPOINT ["/bin/issue2md"]
