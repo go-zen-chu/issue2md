@@ -36,7 +36,15 @@ jobs:
           # Use an existing closed issue from this repository for testing
           ./issue2md -debug \
             -export-dir=./test-output \
-            -issue-url=https://github.com/go-zen-chu/issue2md/issues/1
+            -issue-url=https://github.com/go-zen-chu/issue2md/issues/2
+          
+          ./issue2md -debug \
+            -export-dir=./test-output \
+            -issue-url=https://github.com/go-zen-chu/issue2md/issues/6
+
+          ./issue2md -debug \
+            -export-dir=./test-output \
+            -issue-url=https://github.com/go-zen-chu/issue2md/issues/19          
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       

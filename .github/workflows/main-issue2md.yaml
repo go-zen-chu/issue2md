@@ -11,8 +11,8 @@ jobs:
     if: ${{ !contains(github.event.issue.labels.*.name, 'test') &&
       github.event.issue.state_reason == 'completed' }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+
       - name: Convert issue to markdown
         uses: go-zen-chu/issue2md@main
         with:
@@ -20,12 +20,14 @@ jobs:
           issue-url: ${{ github.event.issue.html_url }}
           # By default, this action stores markdown to repository root. If you want to change export dir, make directory and change setting below.
           export-dir: ./issues
+
       - name: Check diff
         id: diff
         run: |
           git add -N .
           git diff --name-only --exit-code
         continue-on-error: true
+        
       - name: Push to main branch if any updates exists
         if: steps.diff.outcome == 'failure'
         run: |

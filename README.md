@@ -4,11 +4,12 @@ Simple GitHub Action for archiving GitHub issue to Markdown and store in git.
 
 ## Workflow
 
-| kind           | status                                                                                                                                                                                                                                                           |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Code Check     | [![Go general check (go fmt, vet, build, test)](https://github.com/go-zen-chu/issue2md/actions/workflows/go-ci.yaml/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/go-ci.yaml)                                                             |
-| E2E Test       | [![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/test-issue2md/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/test-issue2md.yml)                                                                                        |
+| kind           | status                                                                                                                                                                                                                                                            |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Code Check     | [![Go general check (go fmt, vet, build, test)](https://github.com/go-zen-chu/issue2md/actions/workflows/go-ci.yaml/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/go-ci.yaml)                                                              |
+| E2E Test       | [![E2E Test in PR](https://github.com/go-zen-chu/issue2md/actions/workflows/pr-e2e-test.yaml/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/pr-e2e-test.yaml)                                                                               |
 | Docker Publish | [![Actions Status](https://github.com/go-zen-chu/issue2md/workflows/push-image/badge.svg)](https://github.com/go-zen-chu/issue2md/actions/workflows/push-image.yml) <br> [dockerhub: amasuda/issue2md](https://hub.docker.com/repository/docker/amasuda/issue2md) |
+| Dog fooding    | TBD                                                                                                                                                                                                                                                               |
 
 ## Goal
 

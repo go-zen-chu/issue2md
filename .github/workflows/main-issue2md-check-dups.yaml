@@ -1,20 +1,23 @@
 # actual working sample for dogfooding using latest issue2md
 name: issue2md-check-dups
 on:
-  - push
+  push:
+    branches:
+      - main
 jobs:
   issue2md:
     runs-on: ubuntu-latest
     name: Check same issueURL markdown exists in export-dir
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+
       - name: Check and list duplicated issue markdowns
         uses: go-zen-chu/issue2md@main
         with:
           # By default, this action stores markdown to repository root. If you want to change export dir, make directory and change setting below.
           export-dir: ./issues
           check-dups: true
+
       - name: Send custom JSON data to Slack when issue2md failed
         if: failure()
         id: slack
