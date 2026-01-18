@@ -37,7 +37,6 @@ func setup(envVars []string, cmdArgs []string) (config.Config, error) {
 		fmt.Println(helpMsg)
 		return nil, nil
 	}
-
 	// initialize logger
 	if err := log.Init(cfg.IsDebugMode()); err != nil {
 		return nil, fmt.Errorf("init logger: %w", err)

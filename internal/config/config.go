@@ -25,7 +25,7 @@ const (
 	envPrefix         = "ISSUE2MD_"
 	envExportDir      = envPrefix + "EXPORT_DIR"
 	envGitHubIssueURL = envPrefix + "GITHUB_ISSUE_URL"
-	envGitHubToken    = envPrefix + "GITHUB_TOKEN"
+	envGitHubToken    = "GITHUB_TOKEN"
 )
 
 type config struct {
@@ -132,12 +132,8 @@ func newExportDirPath(givenPath string) (*exportDirPath, error) {
 }
 
 func (c *config) LoadFromEnvVars(envVars []string) error {
-	var err error
 	for _, ev := range envVars {
 		evs := strings.SplitN(ev, "=", 2)
-		if !strings.HasPrefix(evs[0], envPrefix) {
-			continue
-		}
 		switch evs[0] {
 		case envExportDir:
 			edp, err := newExportDirPath(evs[1])
@@ -149,18 +145,13 @@ func (c *config) LoadFromEnvVars(envVars []string) error {
 			c.ghIssueUrl = evs[1]
 		case envGitHubToken:
 			c.ghToken = evs[1]
-		default:
-			err = fmt.Errorf("%w: invalid env var %s", err, ev)
 		}
-	}
-	if err != nil {
-		return err
 	}
 	// Apply default export-dir when env var wasn't provided.
 	if c.exportDirPath == nil {
-		edp, derr := newExportDirPath("./")
-		if derr != nil {
-			return derr
+		edp, err := newExportDirPath("./")
+		if err != nil {
+			return err
 		}
 		c.exportDirPath = edp
 	}
