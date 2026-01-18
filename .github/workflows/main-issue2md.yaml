@@ -12,6 +12,8 @@ jobs:
       github.event.issue.state_reason == 'completed' }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Convert issue to markdown
         uses: go-zen-chu/issue2md@main
@@ -20,7 +22,11 @@ jobs:
           issue-url: ${{ github.event.issue.html_url }}
           # By default, this action stores markdown to repository root. If you want to change export dir, make directory and change setting below.
           export-dir: ./issues
+          auto-commit: true
+          auto-push: true
 
+      # The following steps are kept for backward compatibility but will be skipped
+      # since auto-commit and auto-push are now handled by issue2md itself
       - name: Check diff
         id: diff
         run: |
