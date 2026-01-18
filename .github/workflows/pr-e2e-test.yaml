@@ -1,0 +1,68 @@
+name: E2E Test in PR
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'issues/**'
+
+jobs:
+  test-conversion:
+    runs-on: ubuntu-latest
+    name: Test issue2md conversion on PR branch
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      
+      - name: Build issue2md
+        run: |
+          go build -o issue2md ./cmd/issue2md
+      
+      - name: Create test directory
+        run: mkdir -p ./test-output
+      
+      - name: E2ETest conversion with a real issue
+        run: |
+          # Use an existing closed issue from this repository for testing
+          ./issue2md -debug \
+            -export-dir=./test-output \
+            -issue-url=https://github.com/go-zen-chu/issue2md/issues/1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Verify markdown was created
+        run: |
+          if [ ! "$(ls -A ./test-output)" ]; then
+            echo "Error: No markdown files were created"
+            exit 1
+          fi
+          echo "✅ Markdown files created successfully:"
+          ls -la ./test-output/
+      
+      - name: E2E Test check-dups functionality
+        run: |
+          # Test duplicate checking
+          ./issue2md -debug \
+            -export-dir=./test-output \
+            -issue-url=https://github.com/go-zen-chu/issue2md/issues/1 \
+            -check-dups
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: ./test-output/
+          retention-days: 3
