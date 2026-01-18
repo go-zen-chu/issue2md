@@ -27,7 +27,7 @@ const (
 	envPrefix         = "ISSUE2MD_"
 	envExportDir      = envPrefix + "EXPORT_DIR"
 	envGitHubIssueURL = envPrefix + "GITHUB_ISSUE_URL"
-	envGitHubToken    = "GITHUB_TOKEN"
+	envGitHubToken    = envPrefix + "GITHUB_TOKEN"
 )
 
 type config struct {

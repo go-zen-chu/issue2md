@@ -48,10 +48,14 @@ If you edited upper file locally, then hit `git diff` and merge to the latest fi
 
 | name         | value type | required | default | env var                   | description                                                                                                                                                                                                             |
 | ------------ | ---------- | -------- | ------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| github_token | string     | *        | -       | GITHUB_TOKEN              | [GitHub token](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow) for r/w issue and repo. Using `${{ secrets.GITHUB_TOKEN }}` as inputs satisfies. |
+| github_token | string     | *        | -       | ISSUE2MD_GITHUB_TOKEN              | [GitHub token](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow) for r/w issue and repo. Using `${{ secrets.GITHUB_TOKEN }}` as inputs satisfies. |
 | issue-url    | string     | *        | -       | ISSUE2MD_GITHUB_ISSUE_URL | Issue url for exporting to markdown. Using `${{ github.event.issue.html_url }}` as inputs satisfies.                                                                                                                    |
 | export-dir   | string     |          | `.`     | ISSUE2MD_EXPORT_DIR       | A directory in your repository to export markdown. Default is `.` (repository root)                                                                                                                                     |
 | check-dups   | bool       |          | false   | ISSUE2MD_CHECK_DUPS       | Optional flag for checking duplicate issue URL markdown exists in export-dir. If there is any, issue2md print which files are duplicated.                                                                               |
+
+> [!NOTE]
+> Why `ISSUE2MD_GITHUB_TOKEN` and not `GITHUB_TOKEN`?
+> `GITHUB_TOKEN` is used in command like `gh` which may affect when you want to separately manage tokens in the same action.
 
 ## Development
 
@@ -60,14 +64,14 @@ If you edited upper file locally, then hit `git diff` and merge to the latest fi
 You can test this action locally as follows.
 
 ```bash
-source .envrc  # set GITHUB_TOKEN env var
+source .envrc  # set ISSUE2MD_GITHUB_TOKEN env var
 go run cmd/issue2md -debug -export-dir=./issues -issue-url=https://github.com/go-zen-chu/issue2md/issues/2
 
 # or using nerdctl. Replace `lima nerdctl` to `docker` if you use docker
 # build image
 GOARCH=amd64 GOOS=linux go build -v -o issue2md ./cmd/issue2md; lima nerdctl build -t issue2md:latest .
 # run on container
-lima nerdctl run -it -e GITHUB_TOKEN=${GITHUB_TOKEN} --rm issue2md:latest -- -debug -issue-url=https://github.com/go-zen-chu/issue2md/issues/2 
+lima nerdctl run -it -e ISSUE2MD_GITHUB_TOKEN=${ISSUE2MD_GITHUB_TOKEN} --rm issue2md:latest -- -debug -issue-url=https://github.com/go-zen-chu/issue2md/issues/2 
 ```
 
 ## Appendix

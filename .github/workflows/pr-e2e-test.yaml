@@ -46,7 +46,7 @@ jobs:
             -export-dir=./test-output \
             -issue-url=https://github.com/go-zen-chu/issue2md/issues/19          
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE2MD_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Verify markdown was created
         run: |
@@ -65,7 +65,7 @@ jobs:
             -issue-url=https://github.com/go-zen-chu/issue2md/issues/1 \
             -check-dups
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE2MD_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Upload test results
         if: always()

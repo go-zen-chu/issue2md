@@ -39,7 +39,7 @@ func Test_run(t *testing.T) {
 			args{
 				envVars: []string{
 					"ISSUE2MD_GITHUB_ISSUE_URL=https://github.com/Codertocat/Hello-World/issues/1",
-					"GITHUB_TOKEN=test_token",
+					"ISSUE2MD_GITHUB_TOKEN=test_token",
 					"ISSUE2MD_EXPORT_DIR=" + expDirAbsPath,
 				},
 				genGitHubClient: ui2m.NewMockGitHubClient,
@@ -84,7 +84,7 @@ func Test_run(t *testing.T) {
 			args{
 				envVars: []string{
 					"ISSUE2MD_GITHUB_ISSUE_URL=overwritten",
-					"GITHUB_TOKEN=overwritten",
+					"ISSUE2MD_GITHUB_TOKEN=overwritten",
 					"ISSUE2MD_EXPORT_DIR=./",
 				},
 				cmdArgs: []string{
@@ -165,7 +165,7 @@ func Test_run_relative_path(t *testing.T) {
 			args{
 				envVars: []string{
 					"ISSUE2MD_GITHUB_ISSUE_URL=overwritten",
-					"GITHUB_TOKEN=overwritten",
+					"ISSUE2MD_GITHUB_TOKEN=overwritten",
 					"ISSUE2MD_EXPORT_DIR=./",
 				},
 				cmdArgs: []string{
@@ -237,7 +237,7 @@ func Test_run_failure_case(t *testing.T) {
 			args{
 				envVars: []string{
 					"ISSUE2MD_GITHUB_ISSUE_URL=https://github.com/Codertocat/Hello-World/issues/1",
-					"GITHUB_TOKEN=test_token",
+					"ISSUE2MD_GITHUB_TOKEN=test_token",
 					"ISSUE2MD_THIS_IS_INVALID=hehehe",
 				},
 				genGitHubClient: ui2m.NewMockGitHubClient,
