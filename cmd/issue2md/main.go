@@ -77,7 +77,6 @@ func run(cfg config.Config, githubClient ui2m.GitHubClient) error {
 
 func handleGitOperations(cfg config.Config) error {
 	gitClient := git.NewGitClient("action@github.com", "GitHub Action")
-	
 	// Check if there are any changes
 	hasDiff, err := gitClient.HasDiff(cfg.GetExportDir())
 	if err != nil {
@@ -94,7 +93,6 @@ func handleGitOperations(cfg config.Config) error {
 	// Commit changes if auto-commit is enabled
 	if cfg.IsAutoCommit() {
 		commitMsg := "[skip ci] [GitHub Action] Update automatically"
-		
 		if cfg.IsAutoPush() {
 			// Commit and push
 			log.Infof("Committing and pushing changes...")
