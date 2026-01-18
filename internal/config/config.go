@@ -18,6 +18,8 @@ type Config interface {
 	GetGitHubToken() string
 	GetCheckDups() bool
 	IsDebugMode() bool
+	IsAutoCommit() bool
+	IsAutoPush() bool
 	ShowHelp() (bool, string)
 }
 
@@ -25,7 +27,7 @@ const (
 	envPrefix         = "ISSUE2MD_"
 	envExportDir      = envPrefix + "EXPORT_DIR"
 	envGitHubIssueURL = envPrefix + "GITHUB_ISSUE_URL"
-	envGitHubToken    = "GITHUB_TOKEN"
+	envGitHubToken    = envPrefix + "GITHUB_TOKEN"
 )
 
 type config struct {
@@ -35,6 +37,8 @@ type config struct {
 	checkDups     bool
 	debug         bool
 	help          bool
+	autoCommit    bool
+	autoPush      bool
 	flgSet        *flag.FlagSet
 }
 
@@ -64,6 +68,8 @@ func (c *config) LoadFromCommandArgs(args []string) error {
 	ghIssueUrlVal := c.flgSet.String("issue-url", "", fmt.Sprintf("Set GitHub issue url (%s)", envGitHubIssueURL))
 	ghTokenVal := c.flgSet.String("github-token", "", fmt.Sprintf("[WARN: recommended set from envvar %s] Set GitHub Token (%s)", envGitHubToken, envGitHubToken))
 	checkDupsVal := c.flgSet.Bool("check-dups", false, "Find duplicate issueURL markdowns in export-dir")
+	autoCommitVal := c.flgSet.Bool("auto-commit", false, "Automatically commit changes if markdown files are created or updated")
+	autoPushVal := c.flgSet.Bool("auto-push", false, "Automatically push changes to remote (requires auto-commit)")
 	debugVal := c.flgSet.Bool("debug", false, "Enable debug")
 	helpVal := c.flgSet.Bool("help", false, "Show help")
 
@@ -86,6 +92,10 @@ func (c *config) LoadFromCommandArgs(args []string) error {
 			c.ghToken = *ghTokenVal
 		case "check-dups":
 			c.checkDups = *checkDupsVal
+		case "auto-commit":
+			c.autoCommit = *autoCommitVal
+		case "auto-push":
+			c.autoPush = *autoPushVal
 		case "debug":
 			c.debug = *debugVal
 		case "help":
@@ -176,6 +186,14 @@ func (c *config) GetCheckDups() bool {
 
 func (c *config) IsDebugMode() bool {
 	return c.debug
+}
+
+func (c *config) IsAutoCommit() bool {
+	return c.autoCommit
+}
+
+func (c *config) IsAutoPush() bool {
+	return c.autoPush
 }
 
 func (c *config) ShowHelp() (bool, string) {
