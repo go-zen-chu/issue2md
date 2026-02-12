@@ -14,7 +14,7 @@ jobs:
     name: Test issue2md conversion on PR branch
     steps:
       - name: Checkout PR branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       
