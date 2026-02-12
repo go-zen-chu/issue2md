@@ -20,6 +20,12 @@ inputs:
   check-dups:
     description: "Find duplicate issueURL markdowns exists"
     default: "false"
+  auto-commit:
+    description: "Automatically commit changes if markdown files are created or updated"
+    default: "false"
+  auto-push:
+    description: "Automatically push changes to remote (requires auto-commit)"
+    default: "false"
 runs:
   using: "docker"
   image: "docker://amasuda/issue2md:latest"
@@ -29,6 +35,8 @@ runs:
     - -export-dir=${{ inputs.export-dir }}
     - -debug=${{ inputs.debug }}
     - -check-dups=${{ inputs.check-dups }}
+    - -auto-commit=${{ inputs.auto-commit }}
+    - -auto-push=${{ inputs.auto-push }}
 branding:
   icon: "book"
   color: "blue"
