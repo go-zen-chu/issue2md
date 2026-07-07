@@ -2,7 +2,7 @@ module github.com/go-zen-chu/issue2md
 
 go 1.25.0
 
-toolchain go1.26.4
+toolchain go1.26.5
 
 require (
 	github.com/google/go-github v17.0.0+incompatible
