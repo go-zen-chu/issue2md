@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/go-zen-chu/issue2md/infra/git"
 	"github.com/go-zen-chu/issue2md/infra/github"
 	"github.com/go-zen-chu/issue2md/internal/config"
 	"github.com/go-zen-chu/issue2md/internal/log"
@@ -63,6 +64,51 @@ func run(cfg config.Config, githubClient ui2m.GitHubClient) error {
 			return fmt.Errorf("convert to markdown: %w", err)
 		}
 		log.Infof("Export issue %s to %s, succeeded\n", cfg.GetGitHubIssueURL(), cfg.GetExportDir())
+
+		// Auto commit and push if enabled
+		if cfg.IsAutoCommit() || cfg.IsAutoPush() {
+			if err := handleGitOperations(cfg); err != nil {
+				return fmt.Errorf("git operations: %w", err)
+			}
+		}
 	}
+	return nil
+}
+
+func handleGitOperations(cfg config.Config) error {
+	gitClient := git.NewGitClient("action@github.com", "GitHub Action")
+	// Check if there are any changes
+	hasDiff, err := gitClient.HasDiff(cfg.GetExportDir())
+	if err != nil {
+		return fmt.Errorf("check diff: %w", err)
+	}
+
+	if !hasDiff {
+		log.Infof("No changes detected, skipping git operations")
+		return nil
+	}
+
+	log.Infof("Changes detected in export directory")
+
+	// Commit changes if auto-commit is enabled
+	if cfg.IsAutoCommit() {
+		commitMsg := "[skip ci] [GitHub Action] Update automatically"
+		if cfg.IsAutoPush() {
+			// Commit and push
+			log.Infof("Committing and pushing changes...")
+			if err := gitClient.CommitAndPush(cfg.GetExportDir(), commitMsg); err != nil {
+				return fmt.Errorf("commit and push: %w", err)
+			}
+			log.Infof("Changes committed and pushed successfully")
+		} else {
+			// Commit only (no push)
+			log.Infof("Committing changes...")
+			if err := gitClient.Commit(cfg.GetExportDir(), commitMsg); err != nil {
+				return fmt.Errorf("commit: %w", err)
+			}
+			log.Infof("Changes committed successfully")
+		}
+	}
+
 	return nil
 }
