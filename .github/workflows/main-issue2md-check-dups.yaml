@@ -17,26 +17,3 @@ jobs:
           # By default, this action stores markdown to repository root. If you want to change export dir, make directory and change setting below.
           export-dir: ./issues
           check-dups: true
-
-      - name: Send custom JSON data to Slack when issue2md failed
-        if: failure()
-        id: slack
-        uses: slackapi/slack-github-action@v2.1.1
-        with:
-          payload: |
-            {
-              "text": ":warning: GitHub Action build result: ${{ job.status }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "GitHub Action build result: ${{ job.status }}\nActions URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                  }
-                }
-              ]
-            }
-        env:
-          # currently, it is set to my personal slack channel
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
