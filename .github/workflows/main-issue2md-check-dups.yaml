@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check same issueURL markdown exists in export-dir
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Check and list duplicated issue markdowns
         uses: go-zen-chu/issue2md@main
